@@ -1,4 +1,6 @@
+# Name of the software. Default: $(IMPL_NAME)
 IMPL_NAME = mollusc
+
 TRAF = traf
 
 
@@ -13,14 +15,15 @@ help:
 	@echo ""
 	@echo "  Variables"
 	@echo ""
+	@echo "    IMPL_NAME  Name of the software. Default: $(IMPL_NAME)"
 
 # END-EVAL
 
 
 # Generate data for the implementation
-impl: impl/$(IMPL_NAME)/model/training-schema.json
+impl: impl/$(IMPL_NAME)_server/model/training-schema.json
 
-impl/$(IMPL_NAME)/model/training-schema.json: spec/training-schema.json
+impl/$(IMPL_NAME)_server/model/training-schema.json: spec/training-schema.json
 	mkdir -p $(dir $@)
 	cp $< $@
 
