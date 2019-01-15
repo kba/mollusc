@@ -1,4 +1,6 @@
 const tap = require('tap')
+const glob = require('glob')
+
 const EngineManager = require('../src/engine-manager')
 
 tap.test('engine-manager', t => {
@@ -23,7 +25,9 @@ tap.test('engine-manager', t => {
     const sessionConfig = {
       engineName: engineClass.name,
       engineVersion: engineClass.version,
-      engineArguments: ['--help'],
+      engineArguments: [
+        glob.sync('ocrd-testset/*.tif')
+      ],
     }
     const engine = mgr.createSession(sessionConfig)
     engine.on('STARTED', () => {

@@ -1,5 +1,4 @@
-const {spawn, spawnSync} = require('child_process')
-const readline = require('readline')
+const {spawnSync} = require('child_process')
 
 const BaseEngine = require('./base')
 
@@ -28,23 +27,16 @@ module.exports = class KrakenEngine extends BaseEngine {
     return true
   }
 
-  start() {
-    const args = ['train', ...this.session.config.engineArguments]
-    this.session.cmdLine = ['ketos', args]
+  constructor(...args) {
+    super(...args)
+
+    const cmdLineArguments = ['-vvv', 'train', ...this.session.config.engineArguments]
     // TODO add args
-    this.emit('STARTING')
-    this.child_process = spawn(...this.session.cmdLine)
-    this.child_process.on('close', () => this.session.state = 'STOPPED')
-    this.child_process.on('error', (...args) => this.emit('error', ...args))
-    readline.createInterface({
-        input     : this.child_process.stdout,
-        terminal  : false
-    }).on('line', function(line) {
-        console.log('LINE', {line})
-    })
-    // this.child_process.once('data', () => this.emit('STARTED'))
-    this.session.state = 'STARTED'
-    this.emit('STARTED')
+    this.session.cmdLine = ['ketos', cmdLineArguments]
+  }
+
+  receiveLine(line) {
+    console.log({line})
   }
 
 }

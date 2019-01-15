@@ -2,3 +2,5 @@ __pycache__
 *.pyc
 *.egg-info
 node_modules
+impl/mollusc_server/ocrd-testset
+impl/mollusc_server/ocrd-testset.zip
