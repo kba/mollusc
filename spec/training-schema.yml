@@ -1,28 +1,27 @@
+$id: https://ocr-d.github.io/schemas/v1/training-schema.json
 type: object
 required:
-  - engine
-  - engine_version
-  - engine_arguments
+  - engineName
+  - engineVersion
+  - engineArguments
 properties:
-  engine:
+  engineName:
     type: string
     enum:
       - ocropus
-      - kraken
+      - kraken/ketos
       - tesseract
       - calamari
-  engine_version:
+  engineVersion:
     type: string
-  engine_arguments:
+  engineArguments:
     description: Command line arguments passed to the CLI training tool
     type: array
   eval_ratio:
     description: Ratio of evaluation vs. training data to divide up ground truth
     type: number
-    format: float
     default: 0.9
   random_seed:
     description: Seed for the random number generator shuffling the ground truth before dividing it into evaluation vs. training data
-    type: number
-    format: integer
+    type: integer
     default: 0

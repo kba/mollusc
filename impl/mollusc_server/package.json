@@ -19,6 +19,11 @@
   },
   "homepage": "https://github.com/kba/mollusc_server#readme",
   "dependencies": {
+    "@kba/node-utils": "^0.9.0",
+    "ajv": "^6.7.0",
     "express": "^4.16.4"
+  },
+  "devDependencies": {
+    "tap": "^12.1.1"
   }
 }

@@ -21,9 +21,9 @@ help:
 
 
 # Generate data for the implementation
-impl: impl/$(IMPL_NAME)_server/model/training-schema.json
+impl: impl/$(IMPL_NAME)_server/src/schemas/training-schema.json
 
-impl/$(IMPL_NAME)_server/model/training-schema.json: spec/training-schema.json
+impl/$(IMPL_NAME)_server/src/schemas/training-schema.json: spec/training-schema.json
 	mkdir -p $(dir $@)
 	cp $< $@
 
