@@ -17,10 +17,18 @@ Bag-Info:
   Gt-Transcription-Media-Type:
     required: false
     default: 'text/plain'
-  Gt-Image-Extension:
+  Gt-Transcription-Normalization:
     required: false
-    default: '.png'
-  Gt-Image-Media-Type:
+    default: 'NFKC'
+    enum:
+      - NFD
+      - NFKD
+      - NFC
+      - NFKC
+  Gt-Bitonal-Image-Extension:
+    required: false
+    default: '.bin.png'
+  Gt-Bitonal-Image-Media-Type:
     required: false
     default: 'image/png'
     enum: [
@@ -39,9 +47,9 @@ Bag-Info:
       - 'flat'
       # img and transcription in the same dir below Gt-Directory
       - 'flat-nested'
-      # img and transcription in subfolders Gt-Image-Directory and Gt-Transcription-Directory of Gt-Directory
+      # img and transcription in subfolders Gt-Bitonal-Image-Directory and Gt-Transcription-Directory of Gt-Directory
       - 'subfolders'
-      # img and transcription in subfolders Gt-Image-Directory and Gt-Transcription-Directory in the same dir below Gt-Directory
+      # img and transcription in subfolders Gt-Bitonal-Image-Directory and Gt-Transcription-Directory in the same dir below Gt-Directory
       - 'subfolders-nested'
 Manifests-Required: ['sha512']
 Tag-Manifests-Required: []
