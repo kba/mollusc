@@ -26,18 +26,22 @@ tap.test('engine-manager', t => {
       engineName: engineClass.name,
       engineVersion: engineClass.version,
       engineArguments: [
-        glob.sync('ocrd-testset/*.tif')
+        // '--help',
+        ...glob.sync('ocrd-testset/fied*.tif')
       ],
     }
     const engine = mgr.createSession(sessionConfig)
-    engine.on('STARTED', () => {
+    engine.on('STOPPED', () => {
       console.log(engine.session)
+      t.end()
+    })
+    engine.on('STARTED', () => {
+      // setTimeout(() => engine.stop(), 2000)
       // engine.pause()
       // console.log(engine.session)
       // engine.resume()
-      // console.log(engine.session)
+      console.log(engine.session)
       // console.log({session})
-      t.end()
     })
     engine.start()
 

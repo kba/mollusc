@@ -1,5 +1,5 @@
 const {spawn} = require('child_process')
-const readline = require('readline')
+const {eachLine} = require('line-reader')
 const {EventEmitter} = require('events')
 
 const Session = require('../session')
@@ -26,17 +26,15 @@ module.exports = class BaseEngine extends EventEmitter {
   start() {
     this.emit(STARTING)
     this.child_process = spawn(...this.session.cmdLine)
-    readline.createInterface({
-      input     : this.child_process.stdout,
-      terminal  : false,
-      crlfDelay : 0,
-    }).on('line', line => {
+    eachLine(this.child_process.stdout, {
+      // separator: '\r',
+    }, line => {
       this.session.log.push(line)
       this.receiveLine(line)
     })
-    this.child_process.on('close', () => this.session.state = STOPPED)
+    this.child_process.on('close', () => setTimeout(() => this.stop(), 1000))
+    this.child_process.on('disconnect', () => setTimeout(() => this.stop(), 1000))
     this.child_process.on('error', (...args) => this.emit('error', ...args))
-    // this.child_process.once('data', () => this.emit('STARTED'))
     this.session.state = STARTED
     this.emit(STARTED)
   }

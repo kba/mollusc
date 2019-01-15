@@ -30,9 +30,19 @@ module.exports = class KrakenEngine extends BaseEngine {
   constructor(...args) {
     super(...args)
 
-    const cmdLineArguments = ['-vvv', 'train', ...this.session.config.engineArguments]
+    const cmdLine = []
+    // verbose
+    cmdLine.push('-vv')
+    // subcommand
+    cmdLine.push('train')
+    // Report frequently
+    cmdLine.push('--report', 0.2)
+    // custom arguments
+    cmdLine.push(...this.session.config.engineArguments)
+    console.log({cmdLine})
     // TODO add args
-    this.session.cmdLine = ['ketos', cmdLineArguments]
+    this.session.cmdLine = ['ketos', cmdLine]
+    // Object.assign(this.session.cmdLine, {cmdLine})
   }
 
   receiveLine(line) {

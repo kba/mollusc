@@ -4,3 +4,4 @@ __pycache__
 node_modules
 impl/mollusc_server/ocrd-testset
 impl/mollusc_server/ocrd-testset.zip
+impl/mollusc_server/*.mlmodel
