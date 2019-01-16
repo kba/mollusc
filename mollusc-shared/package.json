@@ -3,10 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "tap **/*.test.js",
-    "start": "node main.js"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/kba/ocr_linegt"
@@ -21,6 +18,5 @@
   "dependencies": {
     "winston": "^3.1.0"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }

@@ -1,4 +1,4 @@
-const MolluscServer = require('../../server')
+const MolluscServer = require('@ocrd/mollusc-server')
 
 module.exports = {
   command: 'start',

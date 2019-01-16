@@ -2,7 +2,7 @@ const tap = require('tap')
 const glob = require('glob')
 
 const {EngineManager} = require('@ocrd/mollusc-backend')
-const engineClass = require('@ocrd/mollusc-backend').engines.KrakenEngine
+const engineClass = require('@ocrd/mollusc-backend').engines.kraken
 
 tap.test('engine-manager', t => {
 

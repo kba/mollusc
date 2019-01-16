@@ -1,8 +1,11 @@
 {
-  "name": "@ocrd/mollusc-server",
+  "name": "@ocrd/mollusc-cli",
   "version": "0.0.1",
-  "description": "API server for mollusc",
-  "main": "server.js",
+  "description": "CLI for mollusc",
+  "main": "src/index.js",
+  "bin": {
+    "mollusc": "src/index.js"
+  },
   "scripts": {
     "test": "tap **/*.test.js",
     "start": "node main.js"
@@ -20,6 +23,7 @@
   "homepage": "https://github.com/kba/@ocrd/mollusc-server#readme",
   "dependencies": {
     "@ocrd/mollusc-shared": "0.0.1",
+    "@ocrd/mollusc-server": "0.0.1",
     "@ocrd/mollusc-backend": "0.0.1",
     "express": "^4.16.4",
     "morgan": "^1.9.1",

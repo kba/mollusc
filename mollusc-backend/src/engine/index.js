@@ -1,4 +1,4 @@
 module.exports = {
-  BaseEngine: require('./base'),
-  KrakenEngine: require('./kraken'),
+  kraken: require('./kraken'),
+  calamari: require('./calamari'),
 }
