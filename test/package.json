@@ -20,8 +20,8 @@
   },
   "homepage": "https://github.com/kba/test#readme",
   "dependencies": {
-    "@ocrd/mollusc-backend": "0.0.1",
     "@ocrd/mollusc-shared": "0.0.1",
+    "@ocrd/mollusc-backend": "0.0.1",
     "tap": "^12.1.1"
   }
 }

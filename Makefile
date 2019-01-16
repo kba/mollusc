@@ -3,6 +3,8 @@ IMPL_NAME = mollusc
 
 TRAF = traf
 
+LERNA = lerna --loglevel debug --sort 
+
 # Tests to run
 TESTS = *.test.js
 
@@ -58,7 +60,8 @@ deps:
 
 # lerna bootstrap
 build: build-backend
-	lerna bootstrap --hoist
+	$(LERNA) bootstrap
+	# $(LERNA) bootstrap --hoist
 
 # Generate data for the implementation
 build-backend: $(IMPL_NAME)-backend/src/schemas/training-schema.json

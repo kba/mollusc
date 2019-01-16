@@ -3,21 +3,9 @@
   "version": "0.0.1",
   "description": "mollusc - backend running the thing",
   "main": "index.js",
-  "scripts": {
-    "test": "tap **/*.test.js",
-    "start": "node main.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/kba/ocrd_linegt"
-  },
-  "keywords": [],
+  "repository": "https://github.com/kba/ocr_linegt",
   "author": "kba",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/kba/mollusc_server/issues"
-  },
-  "homepage": "https://github.com/kba/mollusc_server#readme",
   "dependencies": {
     "@kba/node-utils": "^0.9.0",
     "@ocrd/mollusc-shared": "0.0.1",

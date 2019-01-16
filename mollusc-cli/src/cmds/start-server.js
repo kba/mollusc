@@ -1,7 +1,6 @@
 const MolluscServer = require('@ocrd/mollusc-server')
 
 module.exports = {
-  command: 'start',
   desc: 'Start the server',
   builder(yargs) {
     // console.log({yargs})

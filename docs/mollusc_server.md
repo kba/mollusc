@@ -1,4 +1,17 @@
-# mollusc_server Architecture
+# mollusc Architecture
+
+## packages
+
+~~~mermaid
+graph RL
+
+backend --> shared;
+server --> shared
+server --> backend
+cli --> shared
+cli --> backend
+cli --> server
+~~~
 
 ## Data Model
 
