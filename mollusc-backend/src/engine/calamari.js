@@ -7,9 +7,9 @@ let __version = null
 /**
  * Train with ketos
  */
-module.exports = class KrakenEngine extends BaseEngine {
+module.exports = class CalamariEngine extends BaseEngine {
 
-  static get name() {return 'kraken/ketos'}
+  static get name() {return 'calamari'}
 
   static get version() {
     if (__version)
@@ -17,7 +17,7 @@ module.exports = class KrakenEngine extends BaseEngine {
     else {
       const resp = spawnSync('calamari-train', ['--version'], {encoding: 'utf8'})
       if (resp.error) throw resp.error
-      __version = resp.stdout.replace('calamari-train, v', '').trim()
+      __version = resp.stdout.replace('calamari-train v', '').trim()
       return __version
     }
   }

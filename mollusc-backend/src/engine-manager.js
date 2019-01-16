@@ -54,4 +54,8 @@ module.exports = class EngineManager {
     return engine
   }
 
+  listSessions() {
+    return this._queue
+  }
+
 }
