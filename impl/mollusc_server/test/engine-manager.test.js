@@ -31,6 +31,10 @@ tap.test('engine-manager', t => {
       ],
     }
     const engine = mgr.createSession(sessionConfig)
+    engine.on('ERROR', (...args) => {
+      console.log('ERROR', ...args)
+      t.end()
+    })
     engine.on('STOPPED', () => {
       console.log(engine.session)
       t.end()

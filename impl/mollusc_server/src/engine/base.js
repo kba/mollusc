@@ -3,7 +3,7 @@ const {eachLine} = require('line-reader')
 const {EventEmitter} = require('events')
 
 const Session = require('../session')
-const {STARTING, STARTED, PAUSED, STOPPED} = require('../session/states')
+const {STARTING, NEW, STARTED, PAUSED, STOPPED, ERROR} = require('../session/states')
 
 /**
  * Base class for all engines
@@ -21,48 +21,77 @@ module.exports = class BaseEngine extends EventEmitter {
     // Create a Session object
     this.session = new Session(sessionConfig)
     this.child_process = null
+    this._stderr = []
   }
 
   start() {
-    this.emit(STARTING)
+    if (this.session.state !== NEW)
+      return
+
+    this._changeState(STARTING)
+
+    // Spawn the process
     this.child_process = spawn(...this.session.cmdLine)
-    eachLine(this.child_process.stdout, {
-      // separator: '\r',
-    }, line => {
+
+    // Handle STDOUT lines
+    eachLine(this.child_process.stdout, line => {
       this.session.log.push(line)
-      this.receiveLine(line)
+      this._receiveLine(line)
     })
-    this.child_process.on('close', () => setTimeout(() => this.stop(), 1000))
-    this.child_process.on('disconnect', () => setTimeout(() => this.stop(), 1000))
-    this.child_process.on('error', (...args) => this.emit('error', ...args))
-    this.session.state = STARTED
-    this.emit(STARTED)
+
+    // Collect STDERR
+    eachLine(this.child_process.stderr, line => this._stderr.push(line))
+
+    // Handle exit of process
+    this.child_process.on('close', (code) =>  {
+      setTimeout(() => {
+        if (code) {
+          this._changeState(ERROR, code, this._stderr)
+        } else {
+          this._changeState(STOPPED)
+        }
+      }, 500)
+    })
+
+    // Handle error conditions like not being able to spawn, lost i/o, zombies
+    this.child_process.on('error', (...args) => () => this._changeState(ERROR, ...args))
+
+    this._changeState(STARTED)
   }
 
   pause() {
-    if (this.session.state === PAUSED)
+    if (this.session.state !== STARTED)
       return
     this.child_process.kill('SIGTSTP')
-    this.session.state = PAUSED
-    this.emit(PAUSED)
+    this._changeState(PAUSED)
   }
 
   resume() {
     if (this.session.state !== PAUSED)
       return
     this.child_process.kill('SIGCONT')
-    this.session.state = STARTED
-    this.emit(STARTED)
+    this._changeState(STARTED)
   }
 
   stop() {
+    if (this.session.state === STOPPED || this.session.state === ERROR)
+      return
     this.child_process.kill('SIGHUP')
-    this.session.state = STOPPED
-    this.emit(STOPPED)
+    this._changeState(STOPPED)
   }
 
-  receiveLine(line) {
-    throw new Error("receiveLine() must be implemented!")
+  /* ======================================================================
+   * Private API
+   * ====================================================================== */
+
+  _receiveLine(line) {
+    throw new Error("_receiveLine() must be implemented!")
   }
+
+  _changeState(state, ...args) {
+    Object.assign(this.session, {state})
+    this.emit(state, ...args)
+  }
+
 
 }

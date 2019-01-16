@@ -45,7 +45,7 @@ module.exports = class KrakenEngine extends BaseEngine {
     // Object.assign(this.session.cmdLine, {cmdLine})
   }
 
-  receiveLine(line) {
+  _receiveLine(line) {
     console.log({line})
   }
 
