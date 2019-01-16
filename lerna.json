@@ -1,0 +1,7 @@
+{
+  "packages": [
+    "mollusc-*",
+    "test"
+  ],
+  "version": "0.0.0"
+}

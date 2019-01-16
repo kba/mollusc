@@ -2,6 +2,6 @@ __pycache__
 *.pyc
 *.egg-info
 node_modules
-impl/mollusc_server/ocrd-testset
-impl/mollusc_server/ocrd-testset.zip
-impl/mollusc_server/*.mlmodel
+ocrd-testset
+ocrd-testset.zip
+mollusc_server/*.mlmodel
