@@ -1,4 +1,5 @@
 const getSchema = require('./schemas')
+const log = require('@ocrd/mollusc-shared').createLogger('engine-manager')
 
 module.exports = class EngineManager {
 
@@ -8,9 +9,10 @@ module.exports = class EngineManager {
   }
 
   registerEngine(engineClass) {
-    if (!(engineClass in this._engines)) {
-      // check for version to make sure there is one and not an exception
-      const {version} = engineClass /* eslint no-unused-vars:0 */
+    // check for version to make sure there is one and not an exception
+    const {name, version} = engineClass
+    if (!(this._engines.includes(engineClass))) {
+      log.info(`Registering engine ${name}, version ${version}`)
       this._engines.push(engineClass)
     }
   }

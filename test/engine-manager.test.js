@@ -26,7 +26,7 @@ tap.test('engine-manager', t => {
       engineVersion: engineClass.version,
       engineArguments: [
         // '--help',
-        ...glob.sync('ocrd-testset/fied*.tif')
+        ...glob.sync(`${__dirname}/ocrd-testset/fied*.tif`)
       ],
     }
     const engine = mgr.createSession(sessionConfig)

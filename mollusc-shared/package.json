@@ -1,6 +1,5 @@
 {
-  "name": "test",
-  "private": true,
+  "name": "@ocrd/mollusc-shared",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -14,14 +13,14 @@
   },
   "keywords": [],
   "author": "kba",
-  "license": "0.0.1",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kba/test/issues"
+    "url": "https://github.com/kba/mollusc-shared/issues"
   },
-  "homepage": "https://github.com/kba/test#readme",
+  "homepage": "https://github.com/kba/mollusc-shared#readme",
   "dependencies": {
-    "@ocrd/mollusc-backend": "0.0.1",
-    "@ocrd/mollusc-shared": "0.0.1",
-    "tap": "^12.1.1"
+    "winston": "^3.1.0"
+  },
+  "devDependencies": {
   }
 }

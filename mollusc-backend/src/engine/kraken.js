@@ -1,6 +1,6 @@
 const {spawnSync} = require('child_process')
-
 const BaseEngine = require('./base')
+const log = require('@ocrd/mollusc-shared').createLogger('kraken')
 
 let __version = null
 
@@ -39,14 +39,14 @@ module.exports = class KrakenEngine extends BaseEngine {
     cmdLine.push('--report', 0.2)
     // custom arguments
     cmdLine.push(...this.session.config.engineArguments)
-    console.log({cmdLine})
+    log.debug({cmdLine})
     // TODO add args
     this.session.cmdLine = ['ketos', cmdLine]
     // Object.assign(this.session.cmdLine, {cmdLine})
   }
 
   _receiveLine(line) {
-    console.log({line})
+    log.debug({line})
   }
 
 }

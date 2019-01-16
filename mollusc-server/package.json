@@ -1,0 +1,32 @@
+{
+  "name": "@ocrd/mollusc-server",
+  "version": "0.0.1",
+  "description": "API server for mollusc",
+  "main": "index.js",
+  "bin": {
+    "mollusc-server": "src/cli/index.js"
+  },
+  "scripts": {
+    "test": "tap **/*.test.js",
+    "start": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kba/ocr_linegt"
+  },
+  "keywords": [],
+  "author": "kba",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kba/@ocrd/mollusc-server/issues"
+  },
+  "homepage": "https://github.com/kba/@ocrd/mollusc-server#readme",
+  "dependencies": {
+    "@ocrd/mollusc-shared": "0.0.1",
+    "@ocrd/mollusc-backend": "0.0.1",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1",
+    "yargs": "^12.0.5"
+  },
+  "devDependencies": {}
+}
