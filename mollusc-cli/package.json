@@ -7,9 +7,10 @@
   "author": "kba",
   "license": "MIT",
   "dependencies": {
-    "@ocrd/mollusc-shared": "0.0.1",
-    "@ocrd/mollusc-server": "0.0.1",
     "@ocrd/mollusc-backend": "0.0.1",
+    "@ocrd/mollusc-server": "0.0.1",
+    "@ocrd/mollusc-shared": "0.0.1",
+    "shell-quote": "^1.6.1",
     "yargs": "^12.0.5"
   },
   "bin": {
