@@ -37,6 +37,8 @@ module.exports = class KrakenEngine extends BaseEngine {
     cmdLine.push('train')
     // Report frequently
     cmdLine.push('--report', 0.2)
+    // Save every epoch
+    cmdLine.push('--savefreq', 0.2)
     // custom arguments
     cmdLine.push(...this.session.config.engineArguments)
     log.debug({cmdLine})

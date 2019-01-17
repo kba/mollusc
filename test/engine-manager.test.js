@@ -9,7 +9,7 @@ tap.test('engine-manager', t => {
   t.test('register / get / listEngines', t => {
 
     const mgr = new EngineManager()
-    t.equals(engineClass.name, 'kraken/ketos', 'engineClass.name')
+    t.equals(engineClass.name, 'kraken', 'engineClass.name')
     mgr.registerEngine(engineClass)
     t.equals(mgr.getEngine(engineClass.name), engineClass, 'find by name')
     t.equals(mgr.getEngine(engineClass.name, engineClass.version), engineClass, 'find by name and version')
@@ -26,7 +26,7 @@ tap.test('engine-manager', t => {
       engineVersion: engineClass.version,
       engineArguments: [
         // '--help',
-        ...glob.sync(`${__dirname}/ocrd-testset/fied*.tif`)
+        ...glob.sync(`${__dirname}/assets/gt-bag-testset/data/ground-truth/f*.tif`)
       ],
     }
     const engine = mgr.createSession(sessionConfig)

@@ -2,9 +2,10 @@ const {createLogger, format, transports} = require('winston')
 const consoleTransport = new transports.Console()
 
 module.exports = {
+  level: process.env.LOGLEVEL ? process.env.LOGLEVEL : 'silly',
   createLogger(name) {
     const conf = {
-      level: 'silly',
+      level: module.exports.level,
       format: format.combine(
         format.colorize({
           all: true,
