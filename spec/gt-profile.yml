@@ -20,7 +20,7 @@ Bag-Info:
   Gt-Transcription-Normalization:
     required: false
     default: 'NFKC'
-    enum:
+    values:
       - NFD
       - NFKD
       - NFC
@@ -31,18 +31,17 @@ Bag-Info:
   Gt-Bitonal-Image-Media-Type:
     required: false
     default: 'image/png'
-    enum: [
-      'image/png',
-      'image/tiff',
-      'image/jpeg'
-    ]
+    values:
+      - 'image/png'
+      - 'image/tiff'
+      - 'image/jpeg'
   Gt-Directory:
     required: false
     default: 'ground-truth'
   Gt-Directory-Structure:
     required: false
     default: 'flat'
-    enum:
+    values:
       # img and transcription in the Gt-Directory
       - 'flat'
       # img and transcription in the same dir below Gt-Directory

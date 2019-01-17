@@ -9,7 +9,7 @@ properties:
     type: string
     enum:
       - ocropus
-      - kraken/ketos
+      - kraken
       - tesseract
       - calamari
   engineVersion:

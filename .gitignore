@@ -6,3 +6,6 @@ ocrd-testset
 ocrd-testset.zip
 mollusc_server/*.mlmodel
 package-lock.json
+repo
+test/assets
+*mlmodel
