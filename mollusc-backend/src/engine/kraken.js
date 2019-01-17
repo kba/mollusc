@@ -41,10 +41,7 @@ module.exports = class KrakenEngine extends BaseEngine {
     cmdLine.push('--savefreq', 0.2)
     // custom arguments
     cmdLine.push(...this.session.config.engineArguments)
-    log.debug({cmdLine})
-    // TODO add args
     this.session.cmdLine = ['ketos', cmdLine]
-    // Object.assign(this.session.cmdLine, {cmdLine})
   }
 
   _receiveLine(line) {
