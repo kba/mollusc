@@ -8,9 +8,10 @@ const {EngineManager, engines} = require('@ocrd/mollusc-backend')
 module.exports = class MolluscServer {
 
   constructor() {
-    this.engineManager = new EngineManager()
-    this.engineManager.registerEngine(engines.kraken)
-    this.engineManager.registerEngine(engines.calamari)
+    const engineManager = this.engineManager = new EngineManager()
+    for (let name in engines) {
+      engineManager.registerEngine(engines[name])
+    }
 
     const app = this.app = express()
 

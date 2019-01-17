@@ -7,17 +7,18 @@ let __version = null
 /**
  * Train with ketos
  */
-module.exports = class KrakenEngine extends BaseEngine {
+module.exports = class OcropusEngine extends BaseEngine {
 
-  static get name() {return 'kraken'}
+  static get name() {return 'ocropus'}
 
   static get version() {
     if (__version)
       return __version
     else {
-      const resp = spawnSync('ketos', ['--version'], {encoding: 'utf8'})
+      const env = {...process.env, MPLBACKEND: 'Agg'}
+      const resp = spawnSync('ocropus-rtrain', ['--version'], {encoding: 'utf8', env})
       if (resp.error) throw resp.error
-      __version = resp.stdout.replace('ketos, version ', '').trim()
+      __version = resp.stdout.replace('ocropus-rtrain, v', '').trim()
       return __version
     }
   }
@@ -43,6 +44,9 @@ module.exports = class KrakenEngine extends BaseEngine {
     // TODO add args
     this.session.cmdLine = ['ketos', cmdLine]
     // Object.assign(this.session.cmdLine, {cmdLine})
+
+    // Set MPLBACKEND to Agg so tkinter will be happy
+    this.session.env.MPLBACKEND = 'Agg'
   }
 
   _receiveLine(line) {

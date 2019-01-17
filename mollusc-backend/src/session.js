@@ -9,6 +9,7 @@ module.exports = class TrainingSession {
     this.state = NEW
     this.epochs = []
     this.log = []
+    this.env = {}
   }
 
   addEpoch(data) {

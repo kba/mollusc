@@ -12,7 +12,7 @@ module.exports = class EngineManager {
     // check for version to make sure there is one and not an exception
     const {name, version} = engineClass
     if (!(this._engines.includes(engineClass))) {
-      log.info(`Registering engine ${name}, version ${version}`)
+      log.info(`Registering engine ${name}\tv${version}`)
       this._engines.push(engineClass)
     }
   }
