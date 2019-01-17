@@ -31,7 +31,14 @@ module.exports = class BaseEngine extends EventEmitter {
     this._changeState(STARTING)
 
     // Spawn the process
-    this.child_process = spawn(...this.session.cmdLine)
+    this.child_process = spawn(
+      ...this.session.cmdLine, {
+        env: {
+          ...process.env,
+          ...this.session.env
+        }
+      }
+    )
 
     // Handle STDOUT lines
     eachLine(this.child_process.stdout, line => {

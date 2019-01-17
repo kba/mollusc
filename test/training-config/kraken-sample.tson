@@ -1,0 +1,5 @@
+engineName "kraken"
+engineVersion "1.0.2.dev2"
+groundTruthBag "../assets/gt-bag-testset"
+groundTruthGlob "f*"
+outputModelFormat "application/vnd.ocrd.coreml"

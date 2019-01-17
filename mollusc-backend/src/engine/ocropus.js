@@ -5,7 +5,7 @@ const log = require('@ocrd/mollusc-shared').createLogger('kraken')
 let __version = null
 
 /**
- * Train with ketos
+ * Train with ocropus
  */
 module.exports = class OcropusEngine extends BaseEngine {
 
@@ -34,19 +34,18 @@ module.exports = class OcropusEngine extends BaseEngine {
     const cmdLine = []
     // verbose
     cmdLine.push('-vv')
-    // subcommand
-    cmdLine.push('train')
-    // Report frequently
-    cmdLine.push('--report', 0.2)
+    // Report every 5 epochs
+    cmdLine.push('--savefreq', 5)
+
     // custom arguments
     cmdLine.push(...this.session.config.engineArguments)
-    log.debug({cmdLine})
-    // TODO add args
     this.session.cmdLine = ['ketos', cmdLine]
     // Object.assign(this.session.cmdLine, {cmdLine})
 
     // Set MPLBACKEND to Agg so tkinter will be happy
     this.session.env.MPLBACKEND = 'Agg'
+
+    log.debug({cmdLine})
   }
 
   _receiveLine(line) {

@@ -14,6 +14,13 @@ module.exports = {
       port: {
         desc: 'Port to start server on',
         default: 3434
+      },
+      host: {
+        desc: 'Host to start server',
+        default: 'localhost'
+      },
+      baseUrl: {
+        desc: 'Prefix to use for relative URL. Defaults to http://${host}:${port}',
       }
     })
   },
@@ -28,7 +35,9 @@ module.exports = {
       process.exit()
     }
     const server = new MolluscServer()
-    server.start(args.port)
+    let {host, port, baseUrl} = args
+    if (!baseUrl) baseUrl = `http://${host}:${port}`
+    server.start({host, port, baseUrl})
   }
 }
 

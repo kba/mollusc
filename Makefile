@@ -15,14 +15,14 @@ help:
 	@echo ""
 	@echo "  Targets"
 	@echo ""
-	@echo "    deps           npm install"
-	@echo "    build          lerna bootstrap"
-	@echo "    build-backend  Generate data for the implementation"
-	@echo "    spec           Generate the derived data in spec"
-	@echo "    test           Run tests"
-	@echo "    repo/assets    Clone OCR-D/assets to ./repo/assets"
-	@echo "    assets-clean   Remove assets"
-	@echo "    assets         Setup test assets"
+	@echo "    deps          npm install"
+	@echo "    build         lerna bootstrap"
+	@echo "    copy-schemas  Copy schemas from spec to the implementation"
+	@echo "    spec          Generate the derived data in spec"
+	@echo "    test          Run tests"
+	@echo "    repo/assets   Clone OCR-D/assets to ./repo/assets"
+	@echo "    assets-clean  Remove assets"
+	@echo "    assets        Setup test assets"
 	@echo ""
 	@echo "  Variables"
 	@echo ""
@@ -36,12 +36,12 @@ deps:
 	npm install
 
 # lerna bootstrap
-build: build-backend
+build: copy-schemas
 	$(LERNA) bootstrap
 	# $(LERNA) bootstrap --hoist
 
-# Generate data for the implementation
-build-backend: $(IMPL_NAME)-backend/src/schemas/training-schema.json
+# Copy schemas from spec to the implementation
+copy-schemas: $(IMPL_NAME)-backend/src/schemas/training-schema.json
 
 $(IMPL_NAME)-backend/src/schemas/training-schema.json: spec/training-schema.json
 	cp $< $@

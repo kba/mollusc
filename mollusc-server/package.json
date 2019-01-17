@@ -9,6 +9,7 @@
   "dependencies": {
     "@ocrd/mollusc-backend": "0.0.1",
     "@ocrd/mollusc-shared": "0.0.1",
+    "traf": "^1.0.1",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "morgan": "^1.9.1"

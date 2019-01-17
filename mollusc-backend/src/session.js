@@ -16,8 +16,4 @@ module.exports = class TrainingSession {
     this.epochs.push([new Date(), data])
   }
 
-  toJSON() {
-    return JSON.stringify(this)
-  }
-
 }

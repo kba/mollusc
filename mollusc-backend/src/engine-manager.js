@@ -46,16 +46,24 @@ module.exports = class EngineManager {
     engineClass.validateSessionConfig(sessionConfig)
 
     // Create a new engine instance
-    const engine = new engineClass(sessionConfig)
-    this._queue.push(engine)
+    const instance = new engineClass(sessionConfig)
+    instance.session.id = this._queue.length
+    this._queue.push(instance)
 
     // TODO add event handlers
 
-    return engine
+    return instance
   }
 
-  listSessions() {
+  listInstances() {
     return this._queue
+  }
+
+  getInstanceById(idOrSession) {
+    if (typeof idOrSession !== 'number') {
+      idOrSession = idOrSession.id
+    }
+    return this._queue[idOrSession]
   }
 
 }

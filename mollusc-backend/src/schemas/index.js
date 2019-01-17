@@ -1,12 +1,13 @@
 const Ajv = new require('ajv')({
   allErrors: true,
+  useDefaults: true,
   schemas: {
     'training': require('./training-schema.json')
   },
 })
 
 module.exports = id => {
-  validate = Ajv.getSchema(id)
+  const validate = Ajv.getSchema(id)
   if (! validate) {
     throw new Error(`Unregistered schema ${id}`)
   }
