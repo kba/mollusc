@@ -3,7 +3,6 @@ type: object
 required:
   - engineName
   - engineVersion
-  - engineArguments
 properties:
   engineName:
     type: string
@@ -17,6 +16,9 @@ properties:
   engineArguments:
     description: Command line arguments passed to the CLI training tool
     type: array
+    default: []
+  output_model_format:
+    description: 
   eval_ratio:
     description: Ratio of evaluation vs. training data to divide up ground truth
     type: number

@@ -8,8 +8,9 @@
 * [BagIt profile](#bagit-profile)
 	* [Gt-Transcription-Extension](#gt-transcription-extension)
 	* [Gt-Transcription-Media-Type](#gt-transcription-media-type)
-	* [Gt-Image-Extension](#gt-image-extension)
-	* [Gt-Image-Media-Type](#gt-image-media-type)
+	* [Gt-Transcription-Normalization](#gt-transcription-normalization)
+	* [Gt-Bitonal-Image-Extension](#gt-bitonal-image-extension)
+	* [Gt-Bitonal-Image-Media-Type](#gt-bitonal-image-media-type)
 	* [Gt-Directory](#gt-directory)
 	* [Gt-Directory-Structure](#gt-directory-structure)
 
@@ -48,11 +49,17 @@ Extension of the transcription files. Default: `.gt.txt`.
 
 Media type of the transcription files. Default: `text/plain`.
 
-### Gt-Image-Extension
+### Gt-Transcription-Normalization
+
+Unicode normalization level. One of `NFC`, `NFKC`, `NFD` or `NFKC`. Default: `NFKC`.
+
+![Illustration unicode normalization](http://unicode.org/reports/tr15/images/UAX15-NormFig6.jpg)
+
+### Gt-Bitonal-Image-Extension
 
 Extension of the transcription files. Default: `.gt.txt`.
 
-### Gt-Image-Media-Type
+### Gt-Bitonal-Image-Media-Type
 
 Media type of the transcription files. Default: `text/plain`.
 
@@ -66,9 +73,9 @@ Directory structure. One of
 
   - `flat`: img and transcription in the [`Gt-Directory`]
   - `flat-nested`: img and transcription in the same dir below [`Gt-Directory`]
-  - `subfolders`: img and transcription in subfolders [`Gt-Image-Directory`] and [`Gt-Transcription-Directory`] of [`Gt-Directory`]
-  - `subfolders-nested`: img and transcription in subfolders [`Gt-Image-Directory`] and [`Gt-Transcription-Directory`] in the same dir below Gt-Directory
+  - `subfolders`: img and transcription in subfolders [`Gt-Bitonal-Image-Directory`] and [`Gt-Transcription-Directory`] of [`Gt-Directory`]
+  - `subfolders-nested`: img and transcription in subfolders [`Gt-Bitonal-Image-Directory`] and [`Gt-Transcription-Directory`] in the same dir below Gt-Directory
 
 [`Gt-Directory`]: #gt-directory
-[`Gt-Image-Directory`]: #gt-image-directory
+[`Gt-Bitonal-Image-Directory`]: #gt-image-directory
 [`Gt-Transcription-Directory`]: #gt-transcription-directory
