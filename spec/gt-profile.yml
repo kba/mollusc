@@ -56,9 +56,6 @@ Tag-Manifests-Required: []
 Tag-Files-Required: []
 Tag-Files-Allowed:
   - README.md
-  - Makefile
-  - build.sh
-  - sources.csv
 Allow-Fetch.txt: false
 Serialization: allowed
 Accept-Serialization: application/zip
