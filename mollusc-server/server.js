@@ -1,5 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
+const fileUpload = require('express-fileupload')
 
 const log = require('@ocrd/mollusc-shared').createLogger('server')
 const {EngineManager, engines} = require('@ocrd/mollusc-backend')
@@ -13,63 +14,59 @@ module.exports = class MolluscServer {
     // }
     engineManager.registerEngine(engines.kraken)
 
-    const app = this.app = express()
 
-    // logging middleware
-    app.use(morgan('dev', {stream: {
-      write(msg) {
-        log.info(msg.trim())
-      }
-    }}))
+    // JSON/TSON/YAML parsing middleware
+    const trafMiddleware = require('./middleware/traf-middleware')
 
-  }
+    // File Upload middleware
+    const uploadMiddleware = fileUpload({
+      // 50 MB max
+      limits: {fileSize: 50 * 1024 * 1024},
+      // Automatically creates the directory path specified in .mv(filePathName)
+      createParentPath: true,
+    })
 
-  start({port, host, baseUrl}) {
-    this.setupRoutes(baseUrl)
-    this.app.listen(port, () => {
-      log.info(`Server started at ${baseUrl}`)
+    Object.assign(this, {
+      trafMiddleware,
+      uploadMiddleware,
+      log,
     })
   }
 
-  setupRoutes(baseUrl) {
-    const {app, engineManager} = this
+  start({port, host, baseUrl, dataDir}) {
+    const {engineManager} = this
 
-    const trafMiddleware = require('./middleware/traf-middleware')
+    const app = express()
+
+    // request logging middleware
+    app.use(morgan('dev', {
+      stream: {
+        write(msg) {
+          log.info(msg.trim())
+        }
+      }
+    }))
+
+    Object.assign(this, {
+      port,
+      host,
+      baseUrl,
+      dataDir
+    })
 
     app.get('/debug', (req, resp) => {
       resp.send(engineManager)
     })
 
-    app.get('/session/:id', (req, resp) => {
-      const id = parseInt(req.params.id)
-      const instance = engineManager.getInstanceById(id)
-      if (!instance) {
-        resp.status(404)
-        return resp.send("No such session")
-      }
-      const {session} = instance
-      resp.set('Content-Type', 'application/json')
-      resp.set('Location', `${baseUrl}/session/${session.id}`)
-      resp.send(session)
-    })
+    log.info("Setting up /session")
+    app.use('/session', require('./routes/session')(this))
 
-    app.post('/session', trafMiddleware, (req, resp) => {
-      try {
-        const {session} = engineManager.createSession(req.body)
-        resp.set('Content-Type', 'application/json')
-        resp.set('Location', `${baseUrl}/session/${session.id}`)
-        resp.send(session)
-      } catch (error) {
-        log.warn(error)
-        resp.status(400)
-        resp.send({message: "Invalid config", error})
-      }
-    })
+    log.info("Setting up /gt")
+    app.use('/gt', require('./routes/gt')(this))
 
-    app.get('/session', (req, resp) => {
-      resp.send(engineManager.listSessions())
+    app.listen(port, () => {
+      log.info(`Server started at ${baseUrl}`)
     })
-
   }
 
 }

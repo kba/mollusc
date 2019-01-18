@@ -1,4 +1,5 @@
 const MolluscServer = require('@ocrd/mollusc-server')
+const mkdirp = require('mkdirp')
 
 module.exports = {
   desc: 'Start the server',
@@ -21,6 +22,10 @@ module.exports = {
       },
       baseUrl: {
         desc: 'Prefix to use for relative URL. Defaults to http://${host}:${port}',
+      },
+      dataDir: {
+        desc: 'Data directory to store uploads and temp data.',
+        default: `${process.env.HOME}/mollusc/`,
       }
     })
   },
@@ -34,10 +39,15 @@ module.exports = {
       execSync(cmd, {stdio: 'inherit'})
       process.exit()
     }
+    let {host, port, baseUrl, dataDir} = args
+
+    if (!baseUrl)
+      baseUrl = `http://${host}:${port}`
+
+    mkdirp.sync(dataDir)
+
     const server = new MolluscServer()
-    let {host, port, baseUrl} = args
-    if (!baseUrl) baseUrl = `http://${host}:${port}`
-    server.start({host, port, baseUrl})
+    server.start({host, port, baseUrl, dataDir})
   }
 }
 
