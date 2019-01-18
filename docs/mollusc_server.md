@@ -33,6 +33,20 @@ Specifies how to train:
 
 * [GroundTruthBag] to use
 
+### Engine
+
+Wraps a training engine, basically a child process with captured STDOUT/STDERR, suspendable, resumable etc.
+
+### TrainingSession
+
+Passed to engine at instantiation, serves as exchange object, easily serializabel, contains
+
+- TrainingConfig
+- environment variables
+- log of STDOUT/STDERR
+- epochs
+  - structured log by parsing output
+  - every epoch has e.g. current xyz error rate etc.
 
 ---
 
