@@ -50,6 +50,14 @@ module.exports = class EngineManager {
     instance.session.id = this._queue.length
     this._queue.push(instance)
 
+    // Attach error handler
+    instance.on('ERROR', (exitCode, error) => {
+      Object.assign(instance.session, {
+        exitCode,
+        error
+      })
+    })
+
     // TODO add event handlers
 
     return instance
