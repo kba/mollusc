@@ -8,7 +8,24 @@ const {EngineManager, engines} = require('@ocrd/mollusc-backend')
 module.exports = class MolluscServer {
 
   constructor() {
-    const engineManager = this.engineManager = new EngineManager()
+    // JSON/TSON/YAML parsing middleware
+    const trafMiddleware = require('./middleware/traf-middleware')
+
+    // File Upload middleware
+    const uploadMiddleware = fileUpload({
+      // 50 MB max
+      limits: {fileSize: 50 * 1024 * 1024},
+    })
+
+    Object.assign(this, {
+      trafMiddleware,
+      uploadMiddleware,
+      log,
+    })
+  }
+
+  start({port, host, baseUrl, dataDir}) {
+    const engineManager = this.engineManager = new EngineManager({baseUrl, dataDir})
     ;[
       'tesseract',
       'kraken',
@@ -21,28 +38,6 @@ module.exports = class MolluscServer {
         log.error(`Could not instantiate engine ${engine}: ${JSON.stringify(err)}`)
       }
     })
-
-
-    // JSON/TSON/YAML parsing middleware
-    const trafMiddleware = require('./middleware/traf-middleware')
-
-    // File Upload middleware
-    const uploadMiddleware = fileUpload({
-      // 50 MB max
-      limits: {fileSize: 50 * 1024 * 1024},
-      // Automatically creates the directory path specified in .mv(filePathName)
-      createParentPath: true,
-    })
-
-    Object.assign(this, {
-      trafMiddleware,
-      uploadMiddleware,
-      log,
-    })
-  }
-
-  start({port, host, baseUrl, dataDir}) {
-    const {engineManager} = this
 
     const app = express()
 

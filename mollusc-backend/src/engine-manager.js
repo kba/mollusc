@@ -1,11 +1,15 @@
 const getSchema = require('./schemas')
+const {join} = require('path')
 const log = require('@ocrd/mollusc-shared').createLogger('engine-manager')
+const mkdirp = require('mkdirp')
 
 module.exports = class EngineManager {
 
-  constructor() {
+  constructor({baseUrl, dataDir}) {
     this._engines = []
     this._queue = []
+    this.dataDir = dataDir
+    this.baseUrl = baseUrl
   }
 
   registerEngine(engineClass) {
@@ -33,7 +37,7 @@ module.exports = class EngineManager {
    */
   createSession(sessionConfig) {
 
-    // Validate general schema correctness
+    // Validate general schema correctness and add default values
     getSchema('training')(sessionConfig)
 
     // Make sure engine is registered
@@ -44,6 +48,17 @@ module.exports = class EngineManager {
 
     // Validate the engine is happy about the config
     engineClass.validateSessionConfig(sessionConfig)
+
+    // create working directory
+    // TODO less hacky the files to session.cwd
+    const cwd = join(this.dataDir, 'sessions', `${engineName}-${Date.now()}`)
+    mkdirp.sync(cwd)
+    sessionConfig.cwd = cwd
+
+    // Replace baseUrl with dataDir in groundTruthBag
+    sessionConfig.groundTruthBag = sessionConfig.groundTruthBag
+      .replace(this.baseUrl + '/', this.dataDir)
+    log.warn(sessionConfig)
 
     // Create a new engine instance
     const instance = new engineClass(sessionConfig)
@@ -58,7 +73,7 @@ module.exports = class EngineManager {
       })
     })
 
-    // TODO add event handlers
+    // TODO other event handlers
 
     return instance
   }

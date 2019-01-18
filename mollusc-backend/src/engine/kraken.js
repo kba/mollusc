@@ -1,6 +1,8 @@
 const {spawnSync} = require('child_process')
 const BaseEngine = require('./base')
 const log = require('@ocrd/mollusc-shared').createLogger('kraken')
+const glob = require('glob')
+const {join} = require('path')
 
 let __version = null
 
@@ -46,6 +48,11 @@ module.exports = class KrakenEngine extends BaseEngine {
 
   _receiveLine(line) {
     log.debug({line})
+  }
+
+  _beforeSpawn() {
+    this.session.cmdLine[1].push(
+      ...glob.sync(join(this.gtDir, 'ground-truth', '*.tif')))
   }
 
 }

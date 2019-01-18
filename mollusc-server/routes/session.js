@@ -26,7 +26,7 @@ module.exports = function gtRoute(server) {
     return sendSession(resp, req.session)
   })
 
-  app.get('/:id/:command(start|pause|resume|stop)', sessionMiddleware, (req, resp) => {
+  app.put('/:id/:command(start|pause|resume|stop)', sessionMiddleware, (req, resp) => {
     const {command} = req.params
     log.debug(`Running ${command}() on session ${req.params.id}`)
     req.instance[command]()

@@ -1,5 +1,5 @@
-engineName "${engineName}"
-engineVersion "${engineVersion}"
-groundTruthBag "${baseUrl}/gt/caaaed3d1ebf591a21fb2272110c1018.zip"
+engineName "kraken"
+engineVersion "1.0.2.dev2"
+groundTruthBag "http://localhost:3434/gt/caaaed3d1ebf591a21fb2272110c1018.zip"
 groundTruthGlob "f*"
 outputModelFormat "application/vnd.ocrd.coreml"

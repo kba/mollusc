@@ -1,9 +1,19 @@
-const {spawn} = require('child_process')
+const {spawn, execFileSync} = require('child_process')
 const {eachLine} = require('line-reader')
 const {EventEmitter} = require('events')
+const mkdirp = require('mkdirp')
+const {join} = require('path')
 
 const Session = require('../session')
 const {STARTING, NEW, STARTED, PAUSED, STOPPED, ERROR} = require('../session/states')
+
+function unzipTo(zippath, outpath) {
+  mkdirp.sync(outpath)
+  return execFileSync(`unzip`, [zippath], {
+    cwd: outpath,
+    encoding: 'utf8',
+  })
+}
 
 /**
  * Base class for all engines
@@ -25,24 +35,33 @@ module.exports = class BaseEngine extends EventEmitter {
   }
 
   start() {
-    if (this.session.state !== NEW)
+    const {session} = this
+    if (session.state !== NEW)
       return
 
     this._changeState(STARTING)
 
+    // Unzip the Bag
+    const gtDir = this.gtDir = join(session.config.cwd, 'groundTruthBag')
+    this.session.log.push(unzipTo(session.config.groundTruthBag, gtDir))
+
+    // Allow engines to add commands after construction but before spawning
+    this._beforeSpawn()
+
     // Spawn the process
     this.child_process = spawn(
-      ...this.session.cmdLine, {
+      ...session.cmdLine, {
+        cwd: session.cwd,
         env: {
           ...process.env,
-          ...this.session.env
+          ...session.env
         }
       }
     )
 
     // Handle STDOUT lines
     eachLine(this.child_process.stdout, line => {
-      this.session.log.push(line)
+      session.log.push(line)
       this._receiveLine(line)
     })
 
@@ -98,6 +117,10 @@ module.exports = class BaseEngine extends EventEmitter {
   _changeState(state, ...args) {
     Object.assign(this.session, {state})
     this.emit(state, ...args)
+  }
+
+  _beforeSpawn() {
+    throw new Error("_beforeSpawn() must be implemented!")
   }
 
 
