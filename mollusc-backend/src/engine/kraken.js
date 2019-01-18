@@ -29,8 +29,33 @@ module.exports = class KrakenEngine extends BaseEngine {
     return true
   }
 
-  constructor(...args) {
-    super(...args)
+  _parseLine(line) {
+    let ret = line
+    if (line.match(/Accuracy report/)) {
+      line.replace(/\((\d+)\) (\d+\.\d+) (\d+) (\d+)/, (_, iteration, accuracy, chars, error) => {
+        ret = {
+          iteration: parseInt(iteration),
+          accuracy: parseFloat(accuracy),
+          chars: parseInt(chars),
+          error: parseInt(error)
+        }
+      })
+    }
+    return ret
+  }
+
+  _receiveLine(line) {
+    const parsed = this._parseLine(line)
+    if (typeof parsed === 'string') {
+      log.debug({line})
+    } else {
+      this.session.addEpoch(parsed)
+    }
+  }
+
+  _setCmdLine() {
+
+    const {session} = this
 
     const cmdLine = []
     // verbose
@@ -43,16 +68,13 @@ module.exports = class KrakenEngine extends BaseEngine {
     cmdLine.push('--savefreq', 0.2)
     // custom arguments
     cmdLine.push(...this.session.config.engineArguments)
-    this.session.cmdLine = ['ketos', cmdLine]
-  }
+    // File arguments
+    // TODO respect manifest conventions
+    const toGlob = join(this.gtDir, 'data', 'ground-truth', `${session.config.groundTruthGlob}.tif`)
+    log.debug({toGlob})
+    cmdLine.push(...glob.sync(toGlob))
 
-  _receiveLine(line) {
-    log.debug({line})
-  }
-
-  _beforeSpawn() {
-    this.session.cmdLine[1].push(
-      ...glob.sync(join(this.gtDir, 'ground-truth', '*.tif')))
+    session.cmdLine = ['ketos', cmdLine]
   }
 
 }

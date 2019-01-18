@@ -43,10 +43,11 @@ module.exports = class BaseEngine extends EventEmitter {
 
     // Unzip the Bag
     const gtDir = this.gtDir = join(session.config.cwd, 'groundTruthBag')
-    this.session.log.push(unzipTo(session.config.groundTruthBag, gtDir))
+    console.log(unzipTo(session.config.groundTruthBag, gtDir))
+    // this.session.log.push()
 
-    // Allow engines to add commands after construction but before spawning
-    this._beforeSpawn()
+    // Set command line
+    this._setCmdLine()
 
     // Spawn the process
     this.child_process = spawn(
@@ -119,8 +120,8 @@ module.exports = class BaseEngine extends EventEmitter {
     this.emit(state, ...args)
   }
 
-  _beforeSpawn() {
-    throw new Error("_beforeSpawn() must be implemented!")
+  _setCmdLine() {
+    throw new Error("_setCmdLine() must be implemented!")
   }
 
 
