@@ -72,6 +72,9 @@ module.exports = class MolluscServer {
     log.info("Setting up /gt")
     app.use('/gt', require('./routes/gt')(this))
 
+    log.info("Setting up /engine")
+    app.use('/engine', require('./routes/engine')(this))
+
     app.listen(port, () => {
       log.info(`Server started at ${baseUrl}`)
     })
