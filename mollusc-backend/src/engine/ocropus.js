@@ -16,7 +16,7 @@ module.exports = class OcropusEngine extends BaseEngine {
       return __version
     else {
       const env = {...process.env, MPLBACKEND: 'Agg'}
-      const resp = spawnSync('xocropus-rtrain', ['--version'], {encoding: 'utf8', env})
+      const resp = spawnSync('ocropus-rtrain', ['--version'], {encoding: 'utf8', env})
       if (resp.error) throw resp.error
       __version = resp.stdout.replace('ocropus-rtrain, v', '').trim()
       return __version
@@ -31,19 +31,27 @@ module.exports = class OcropusEngine extends BaseEngine {
   constructor(...args) {
     super(...args)
 
+    // Set MPLBACKEND to Agg so tkinter will be happy
+    this.session.env.MPLBACKEND = 'Agg'
+
     const cmdLine = []
-    // verbose
-    cmdLine.push('-vv')
+
+    //   --updates             verbose LSTM updates
+    cmdLine.push('--updates')
+
     // Report every 5 epochs
     cmdLine.push('--savefreq', 5)
 
+    // Output
+    cmdLine.push('foo-%d.pyrnn.gz')
+
     // custom arguments
     cmdLine.push(...this.session.config.engineArguments)
-    this.session.cmdLine = ['ketos', cmdLine]
-    // Object.assign(this.session.cmdLine, {cmdLine})
 
-    // Set MPLBACKEND to Agg so tkinter will be happy
-    this.session.env.MPLBACKEND = 'Agg'
+    // add files
+    cmdLine.push('*.bin.png')
+
+    this.session.cmdLine = ['ocropus-rtrain', cmdLine]
 
     log.debug({cmdLine})
   }
