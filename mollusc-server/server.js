@@ -9,10 +9,18 @@ module.exports = class MolluscServer {
 
   constructor() {
     const engineManager = this.engineManager = new EngineManager()
-    // for (let name in engines) {
-    //   engineManager.registerEngine(engines[name])
-    // }
-    engineManager.registerEngine(engines.kraken)
+    ;[
+      'tesseract',
+      'kraken',
+      'ocropus',
+      'calamari'
+    ].forEach(engine => {
+      try {
+        engineManager.registerEngine(engines[engine])
+      } catch (err) {
+        log.error(`Could not instantiate engine ${engine}: ${JSON.stringify(err)}`)
+      }
+    })
 
 
     // JSON/TSON/YAML parsing middleware

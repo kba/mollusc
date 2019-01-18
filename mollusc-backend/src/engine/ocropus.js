@@ -16,7 +16,7 @@ module.exports = class OcropusEngine extends BaseEngine {
       return __version
     else {
       const env = {...process.env, MPLBACKEND: 'Agg'}
-      const resp = spawnSync('ocropus-rtrain', ['--version'], {encoding: 'utf8', env})
+      const resp = spawnSync('xocropus-rtrain', ['--version'], {encoding: 'utf8', env})
       if (resp.error) throw resp.error
       __version = resp.stdout.replace('ocropus-rtrain, v', '').trim()
       return __version
