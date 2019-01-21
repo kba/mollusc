@@ -72,12 +72,16 @@ module.exports = class BaseEngine extends EventEmitter {
 
     // Handle STDOUT lines
     eachLine(this.child_process.stdout, line => {
+      console.warn({stdout: line})
       session.log.push(line)
       this._receiveLine(line)
     })
 
     // Collect STDERR
-    eachLine(this.child_process.stderr, line => this._stderr.push(line))
+    eachLine(this.child_process.stderr, line => {
+      console.warn({stderr: line})
+      this._stderr.push(line)
+    })
 
     // Handle exit of process
     this.child_process.on('close', (code) =>  {

@@ -1,6 +1,9 @@
 const {spawnSync} = require('child_process')
 const BaseEngine = require('./base')
-const log = require('@ocrd/mollusc-shared').createLogger('kraken')
+const {join} = require('path')
+
+const glob = require('glob')
+const log = require('@ocrd/mollusc-shared').createLogger('calamari')
 
 let __version = null
 
@@ -22,31 +25,49 @@ module.exports = class CalamariEngine extends BaseEngine {
     }
   }
 
-  static validateSessionConfig() {
-    // TODO implementation
+  static validateSessionConfig(sessionConfig) {
+    if (sessionConfig.outputModelFormat !== 'application/vnd.ocrd.tf+zip') {
+      log.error(`outputModelFormat not supported: ${sessionConfig.outputModelFormat}`)
+      return false
+    }
     return true
   }
 
-  constructor(...args) {
-    super(...args)
+  _parseLine(line) {
+    let ret = line
+    if (line.match(/^#\d+:/)) {
+      line.replace(/^#(\d+): .* ler=(\d+.\d+)/, (_, iteration, error) => {
+        ret = ['addEpoch', {
+          iteration: parseInt(iteration),
+          error: parseFloat(error),
+          accuracy: -1,
+          chars: -1,
+        }]
+      })
+    } else if (line.match("^Storing checkpoint to ")) {
+      line.replace(/Storing checkpoint to '([^']+)'/, (_, checkpoint) => {
+        ret = ['addCheckpoint', checkpoint]
+      })
+    }
+    return ret
+  }
+
+  _setCmdLine() {
+
+    const {session} = this
 
     const cmdLine = []
-    // verbose
-    cmdLine.push('-vv')
-    // subcommand
-    cmdLine.push('train')
-    // Report frequently
-    cmdLine.push('--report', 0.2)
     // custom arguments
     cmdLine.push(...this.session.config.engineArguments)
-    log.debug({cmdLine})
-    // TODO add args
-    this.session.cmdLine = ['ketos', cmdLine]
-    // Object.assign(this.session.cmdLine, {cmdLine})
+    // File arguments
+    // TODO respect manifest conventions
+    const toGlob = join(this.gtDir, 'data', 'ground-truth', `${session.config.groundTruthGlob}.tif`)
+    log.debug({toGlob})
+    cmdLine.push('--files')
+    cmdLine.push(...glob.sync(toGlob))
+
+    session.cmdLine = ['calamari-train', cmdLine]
   }
 
-  _receiveLine(line) {
-    log.debug({line})
-  }
 
 }
