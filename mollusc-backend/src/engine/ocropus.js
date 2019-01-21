@@ -1,6 +1,8 @@
 const {spawnSync} = require('child_process')
 const BaseEngine = require('./base')
-const log = require('@ocrd/mollusc-shared').createLogger('kraken')
+const {join} = require('path')
+const log = require('@ocrd/mollusc-shared').createLogger('ocropus')
+const glob = require('glob')
 
 let __version = null
 
@@ -23,8 +25,11 @@ module.exports = class OcropusEngine extends BaseEngine {
     }
   }
 
-  static validateSessionConfig() {
-    // TODO implementation
+  static validateSessionConfig(sessionConfig) {
+    if (sessionConfig.outputModelFormat !== 'application/vnd.ocrd.pyrnn') {
+      log.error(`outputModelFormat not supported: ${sessionConfig.outputModelFormat}`)
+      return false
+    }
     return true
   }
 
@@ -33,31 +38,50 @@ module.exports = class OcropusEngine extends BaseEngine {
 
     // Set MPLBACKEND to Agg so tkinter will be happy
     this.session.env.MPLBACKEND = 'Agg'
+  }
 
+  _parseLine(line) {
+    let ret = line
+    if (line.match(/^\d+ \d+\.\d+/)) {
+      line.replace(/^(\d+) (\d+\.\d+)/, (_, iteration, error) => {
+        ret = ['addEpoch', {
+          iteration: parseInt(iteration),
+          accuracy: -1,
+          chars: -1,
+          error: parseFloat(error)
+        }]
+      })
+    } else if (line.match('^# saving ')) {
+      ret = ['addCheckpoint', join(this.session.config.cwd, line.replace(/^# saving /, ''))]
+    }
+    return ret
+  }
+
+  _setCmdLine() {
+
+    const {session} = this
     const cmdLine = []
 
-    //   --updates             verbose LSTM updates
-    cmdLine.push('--updates')
+    // //   --updates             verbose LSTM updates
+    // cmdLine.push('--updates')
 
-    // Report every 5 epochs
+    // Save every 5 epochs
     cmdLine.push('--savefreq', 5)
 
     // Output
-    cmdLine.push('foo-%d.pyrnn.gz')
+    cmdLine.push('--output')
+    cmdLine.push('model-%d.pyrnn')
 
     // custom arguments
     cmdLine.push(...this.session.config.engineArguments)
 
     // add files
-    cmdLine.push('*.bin.png')
+    // TODO respect manifest conventions
+    const toGlob = join(this.gtDir, 'data', 'ground-truth', `${session.config.groundTruthGlob}.tif`)
+    log.debug({toGlob})
+    cmdLine.push(...glob.sync(toGlob))
 
     this.session.cmdLine = ['ocropus-rtrain', cmdLine]
-
-    log.debug({cmdLine})
-  }
-
-  _receiveLine(line) {
-    log.debug({line})
   }
 
 }

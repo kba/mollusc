@@ -24,8 +24,11 @@ module.exports = class KrakenEngine extends BaseEngine {
     }
   }
 
-  static validateSessionConfig() {
-    // TODO implementation
+  static validateSessionConfig(sessionConfig) {
+    if (sessionConfig.outputModelFormat !== 'application/vnd.ocrd.coreml') {
+      log.error(`outputModelFormat not supported: ${sessionConfig.outputModelFormat}`)
+      return false
+    }
     return true
   }
 
@@ -42,21 +45,10 @@ module.exports = class KrakenEngine extends BaseEngine {
       })
     } else if (line.match("Saving to ")) {
       line.replace(/Saving to ([^\s]+)/, (_, checkpointBasename) => {
-        ret = ['addCheckpoint', checkpointBasename]
+        ret = ['addCheckpoint', join(this.session.config.cwd, `${checkpointBasename}.mlmodel`)]
       })
     }
     return ret
-  }
-
-  _receiveLine(line) {
-    const parsed = this._parseLine(line)
-    if (typeof parsed === 'string') {
-      log.debug(`[Session ${this.id}] UNHANDLED LINE: "${line}"`)
-    } else if (parsed[0] === 'addEpoch') {
-      this.session.addEpoch(parsed[1])
-    } else if (parsed[0] === 'addCheckpoint') {
-      this.session.addCheckpoint(join(this.session.config.cwd, `${parsed[1]}.mlmodel`))
-    }
   }
 
   _setCmdLine() {

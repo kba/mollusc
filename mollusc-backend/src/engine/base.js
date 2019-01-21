@@ -120,12 +120,25 @@ module.exports = class BaseEngine extends EventEmitter {
   /* ======================================================================
    * Private API
    * ====================================================================== */
+  _parseLine(line) {
+    throw new Error("_parseLine() must be implemented!")
+  }
 
   _receiveLine(line) {
-    throw new Error("_receiveLine() must be implemented!")
+    const parsed = this._parseLine(line)
+    if (typeof parsed === 'string') {
+      log.debug(`[Session ${this.id}] UNHANDLED LINE: "${line}"`)
+    } else if (parsed[0] === 'addEpoch') {
+      this.session.addEpoch(parsed[1])
+    } else if (parsed[0] === 'addCheckpoint') {
+      this.session.addCheckpoint(parsed[1])
+    }
   }
 
   _changeState(state, ...args) {
+    if (state === ERROR) {
+      log.error(`[${this.session.id}] ${[...args]}`)
+    }
     Object.assign(this.session, {state})
     this._saveSession()
     this.emit(state, ...args)
@@ -136,7 +149,7 @@ module.exports = class BaseEngine extends EventEmitter {
   }
 
   _saveSession() {
-    writeFileSync(this.sessionFile, JSON.stringify(this.session))
+    writeFileSync(this.sessionFile, JSON.stringify(this.session, null, 2))
   }
 
 
