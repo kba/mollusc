@@ -33,12 +33,16 @@ module.exports = class KrakenEngine extends BaseEngine {
     let ret = line
     if (line.match(/Accuracy report/)) {
       line.replace(/\((\d+)\) (\d+\.\d+) (\d+) (\d+)/, (_, iteration, accuracy, chars, error) => {
-        ret = {
+        ret = ['addEpoch', {
           iteration: parseInt(iteration),
           accuracy: parseFloat(accuracy),
           chars: parseInt(chars),
           error: parseInt(error)
-        }
+        }]
+      })
+    } else if (line.match("Saving to ")) {
+      line.replace(/Saving to ([^\s]+)/, (_, checkpointBasename) => {
+        ret = ['addCheckpoint', checkpointBasename]
       })
     }
     return ret
@@ -47,9 +51,11 @@ module.exports = class KrakenEngine extends BaseEngine {
   _receiveLine(line) {
     const parsed = this._parseLine(line)
     if (typeof parsed === 'string') {
-      log.debug(`UNHANDLED LINE: "${line}"`)
-    } else {
-      this.session.addEpoch(parsed)
+      log.debug(`[Session ${this.id}] UNHANDLED LINE: "${line}"`)
+    } else if (parsed[0] === 'addEpoch') {
+      this.session.addEpoch(parsed[1])
+    } else if (parsed[0] === 'addCheckpoint') {
+      this.session.addCheckpoint(join(this.session.config.cwd, `${parsed[1]}.mlmodel`))
     }
   }
 

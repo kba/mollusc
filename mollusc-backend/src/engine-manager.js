@@ -57,8 +57,7 @@ module.exports = class EngineManager {
     sessionConfig.cwd = cwd
 
     // Replace baseUrl with dataDir in groundTruthBag
-    sessionConfig.groundTruthBag = sessionConfig.groundTruthBag
-      .replace(this.baseUrl + '/', this.dataDir)
+    sessionConfig.groundTruthBag = sessionConfig.groundTruthBag.replace(this.baseUrl + '/', this.dataDir)
     log.warn(sessionConfig)
 
     // Create a new engine instance

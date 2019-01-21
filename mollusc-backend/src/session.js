@@ -8,9 +8,14 @@ module.exports = class TrainingSession {
     this.id = id
     this.config = config
     this.state = NEW
+    this.checkpoints = []
     this.epochs = []
     this.log = []
     this.env = {}
+  }
+
+  addCheckpoint(data) {
+    this.checkpoints.push([new Date(), data])
   }
 
   addEpoch(data) {

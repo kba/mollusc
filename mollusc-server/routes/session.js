@@ -27,9 +27,10 @@ module.exports = function gtRoute(server) {
     return sendSession(req, resp)
   })
 
-  app.post('/:id/save', sessionMiddleware, (req, resp) => {
+  app.post('/:id/save', sessionMiddleware, (req, resp, next) => {
     const {instance} = req
     instance._saveSession()
+    return resp.send('Saved')
   })
 
   app.put('/:id/:command(start|pause|resume|stop)', sessionMiddleware, (req, resp) => {
@@ -46,6 +47,7 @@ module.exports = function gtRoute(server) {
       resp.set('Location', `${baseUrl}/session/${id}`)
       resp.send(session)
     } catch (error) {
+      console.log(error)
       log.warn(error)
       resp.status(400)
       resp.send({message: "Invalid config", error})

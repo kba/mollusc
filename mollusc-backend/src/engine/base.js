@@ -3,7 +3,7 @@ const {eachLine} = require('line-reader')
 const {EventEmitter} = require('events')
 const mkdirp = require('mkdirp')
 const {join} = require('path')
-const {writeFile} = require('fs')
+const {writeFileSync} = require('fs')
 
 const Session = require('../session')
 const {STARTING, NEW, STARTED, PAUSED, STOPPED, ERROR} = require('../session/states')
@@ -36,6 +36,10 @@ module.exports = class BaseEngine extends EventEmitter {
     this.session = new Session(id, sessionConfig)
     this.child_process = null
     this._stderr = []
+
+    const {cwd}      = sessionConfig
+    this.gtDir       = join(cwd, 'groundTruthBag')
+    this.sessionFile = join(cwd, 'session.json')
   }
 
   start() {
@@ -46,8 +50,7 @@ module.exports = class BaseEngine extends EventEmitter {
     this._changeState(STARTING)
 
     // Unzip the Bag
-    const gtDir = this.gtDir = join(session.config.cwd, 'groundTruthBag')
-    console.log(unzipTo(session.config.groundTruthBag, gtDir))
+    console.log(unzipTo(session.config.groundTruthBag, this.gtDir))
     // this.session.log.push()
 
     // Set command line
@@ -124,6 +127,7 @@ module.exports = class BaseEngine extends EventEmitter {
 
   _changeState(state, ...args) {
     Object.assign(this.session, {state})
+    this._saveSession()
     this.emit(state, ...args)
   }
 
@@ -132,9 +136,7 @@ module.exports = class BaseEngine extends EventEmitter {
   }
 
   _saveSession() {
-    const {cwd} = this.session.config
-    const saveName = join(cwd, 'session.json')
-    writeFile(saveName, JSON.stringify(this.session))
+    writeFileSync(this.sessionFile, JSON.stringify(this.session))
   }
 
 
