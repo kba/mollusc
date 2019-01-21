@@ -4,7 +4,8 @@ const {NEW} = require('./session/states')
  */
 module.exports = class TrainingSession {
 
-  constructor(config) {
+  constructor(id, config) {
+    this.id = id
     this.config = config
     this.state = NEW
     this.epochs = []

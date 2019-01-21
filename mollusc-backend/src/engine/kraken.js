@@ -47,7 +47,7 @@ module.exports = class KrakenEngine extends BaseEngine {
   _receiveLine(line) {
     const parsed = this._parseLine(line)
     if (typeof parsed === 'string') {
-      log.debug({line})
+      log.debug(`UNHANDLED LINE: "${line}"`)
     } else {
       this.session.addEpoch(parsed)
     }

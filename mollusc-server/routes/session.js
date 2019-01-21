@@ -5,39 +5,47 @@ module.exports = function gtRoute(server) {
   const app = new Router()
 
   function sessionMiddleware(req, resp, next) {
-    const id = parseInt(req.params.id)
+    const id = req.params.id
     const instance = engineManager.getInstanceById(id)
-    if (!instance) {
-      resp.status(404)
-      return resp.send("No such session")
-    }
+    if (!instance)
+      return resp.status(404).send("No such session")
     const {session} = instance
     Object.assign(req, {session, instance})
     next()
   }
 
-  function sendSession(resp, session) {
+  function sendSession(req, resp) {
+    const {session} = req
     resp.set('Content-Type', 'application/json')
     resp.set('Location', `${baseUrl}/session/${session.id}`)
     resp.send(session)
   }
 
+  // Dev endpoint: list latest session without having to know its ID
+  app.get('/latest', (req, resp) => {
+    const instance = engineManager.listInstances().pop()
+    if (!instance)
+      return resp.status(404).send("No such session")
+    req.session = instance.session
+    return sendSession(req, resp)
+  })
+
   app.get('/:id', sessionMiddleware, (req, resp) => {
-    return sendSession(resp, req.session)
+    return sendSession(req, resp)
   })
 
   app.put('/:id/:command(start|pause|resume|stop)', sessionMiddleware, (req, resp) => {
     const {command} = req.params
     log.debug(`Running ${command}() on session ${req.params.id}`)
     req.instance[command]()
-    return sendSession(resp, req.session)
+    return sendSession(req, resp)
   })
 
   app.post('/', trafMiddleware, (req, resp) => {
     try {
-      const {session} = engineManager.createSession(req.body)
+      const {id, session} = engineManager.createSession(req.body)
       resp.set('Content-Type', 'application/json')
-      resp.set('Location', `${baseUrl}/session/${session.id}`)
+      resp.set('Location', `${baseUrl}/session/${id}`)
       resp.send(session)
     } catch (error) {
       log.warn(error)
@@ -47,7 +55,12 @@ module.exports = function gtRoute(server) {
   })
 
   app.get('/', (req, resp) => {
-    resp.send(engineManager.listInstances().map(instance => instance.session))
+    const sessions = engineManager.listInstances().map(instance => instance.session)
+    if (req.query.full == '1') {
+      resp.send(sessions)
+    } else  {
+      resp.send(sessions.map(session => `${baseUrl}/session/${session.id}`))
+    }
   })
 
   return app

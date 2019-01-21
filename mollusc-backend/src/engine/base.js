@@ -7,6 +7,8 @@ const {join} = require('path')
 const Session = require('../session')
 const {STARTING, NEW, STARTED, PAUSED, STOPPED, ERROR} = require('../session/states')
 
+const log = require('@ocrd/mollusc-shared').createLogger('engine.base')
+
 function unzipTo(zippath, outpath) {
   mkdirp.sync(outpath)
   return execFileSync(`unzip`, [zippath], {
@@ -26,10 +28,11 @@ module.exports = class BaseEngine extends EventEmitter {
    *
    * @return {Session}
    */
-  constructor(sessionConfig) {
+  constructor(id, sessionConfig) {
     super()
+    this.id = id
     // Create a Session object
-    this.session = new Session(sessionConfig)
+    this.session = new Session(id, sessionConfig)
     this.child_process = null
     this._stderr = []
   }
@@ -50,15 +53,18 @@ module.exports = class BaseEngine extends EventEmitter {
     this._setCmdLine()
 
     // Spawn the process
-    this.child_process = spawn(
+    const spawnArgs = [
       ...session.cmdLine, {
-        cwd: session.cwd,
+        cwd: session.config.cwd,
         env: {
           ...process.env,
           ...session.env
         }
       }
-    )
+    ]
+    log.info("Spawning child process")
+    log.info(spawnArgs)
+    this.child_process = spawn(...spawnArgs)
 
     // Handle STDOUT lines
     eachLine(this.child_process.stdout, line => {

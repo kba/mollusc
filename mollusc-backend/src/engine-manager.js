@@ -51,7 +51,8 @@ module.exports = class EngineManager {
 
     // create working directory
     // TODO less hacky the files to session.cwd
-    const cwd = join(this.dataDir, 'sessions', `${engineName}-${Date.now()}`)
+    const sessionId = `${engineName}-${Date.now()}`
+    const cwd = join(this.dataDir, 'sessions', sessionId)
     mkdirp.sync(cwd)
     sessionConfig.cwd = cwd
 
@@ -61,8 +62,7 @@ module.exports = class EngineManager {
     log.warn(sessionConfig)
 
     // Create a new engine instance
-    const instance = new engineClass(sessionConfig)
-    instance.session.id = this._queue.length
+    const instance = new engineClass(sessionId, sessionConfig)
     this._queue.push(instance)
 
     // Attach error handler
@@ -79,14 +79,14 @@ module.exports = class EngineManager {
   }
 
   listInstances() {
-    return this._queue
+    return [...this._queue]
   }
 
   getInstanceById(idOrSession) {
-    if (typeof idOrSession !== 'number') {
+    if (typeof idOrSession !== 'string') {
       idOrSession = idOrSession.id
     }
-    return this._queue[idOrSession]
+    return this._queue.find(instance => instance.id = idOrSession)
   }
 
 }
