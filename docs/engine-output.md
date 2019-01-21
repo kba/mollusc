@@ -72,9 +72,11 @@ At iteration 2400/2400/2400, Mean rms=3.626%, delta=11.788%, char train=51.116%,
 
 ## calamari
 
-- `loss`: neural network loss / cost
-- `ler`
-- `dt`
+See https://github.com/Calamari-OCR/calamari/issues/60#issuecomment-455996548
+
+- `loss`: CTC-Loss: No 'real' meaning, its the optimization function.
+- `ler`:  Label Error Rate = #Wrong characters / #Total chars (sometimes = Character Error Rate)
+- `dt`: Time to process a single line
 
 ```
 #00006700: loss=0.43644236 ler=0.00277098 dt=0.32580439s
