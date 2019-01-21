@@ -3,6 +3,7 @@ const {eachLine} = require('line-reader')
 const {EventEmitter} = require('events')
 const mkdirp = require('mkdirp')
 const {join} = require('path')
+const {writeFile} = require('fs')
 
 const Session = require('../session')
 const {STARTING, NEW, STARTED, PAUSED, STOPPED, ERROR} = require('../session/states')
@@ -128,6 +129,12 @@ module.exports = class BaseEngine extends EventEmitter {
 
   _setCmdLine() {
     throw new Error("_setCmdLine() must be implemented!")
+  }
+
+  _saveSession() {
+    const {cwd} = this.session.config
+    const saveName = join(cwd, 'session.json')
+    writeFile(saveName, JSON.stringify(this.session))
   }
 
 

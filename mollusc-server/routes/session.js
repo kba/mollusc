@@ -6,7 +6,9 @@ module.exports = function gtRoute(server) {
 
   function sessionMiddleware(req, resp, next) {
     const id = req.params.id
-    const instance = engineManager.getInstanceById(id)
+    const instance = (id === 'latest')
+      ? engineManager.listInstances().pop()
+      : engineManager.getInstanceById(id)
     if (!instance)
       return resp.status(404).send("No such session")
     const {session} = instance
@@ -21,17 +23,13 @@ module.exports = function gtRoute(server) {
     resp.send(session)
   }
 
-  // Dev endpoint: list latest session without having to know its ID
-  app.get('/latest', (req, resp) => {
-    const instance = engineManager.listInstances().pop()
-    if (!instance)
-      return resp.status(404).send("No such session")
-    req.session = instance.session
+  app.get('/:id', sessionMiddleware, (req, resp) => {
     return sendSession(req, resp)
   })
 
-  app.get('/:id', sessionMiddleware, (req, resp) => {
-    return sendSession(req, resp)
+  app.post('/:id/save', sessionMiddleware, (req, resp) => {
+    const {instance} = req
+    instance._saveSession()
   })
 
   app.put('/:id/:command(start|pause|resume|stop)', sessionMiddleware, (req, resp) => {
@@ -62,6 +60,7 @@ module.exports = function gtRoute(server) {
       resp.send(sessions.map(session => `${baseUrl}/session/${session.id}`))
     }
   })
+
 
   return app
 }
