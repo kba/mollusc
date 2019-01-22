@@ -1,0 +1,21 @@
+<div id="app" class="container">
+
+  <div id="nav">
+
+    <router-link to="/">Home</router-link> |
+    <router-link to="/upload">Uploads</router-link> |
+    <router-link to="/sessions">Sessions</router-link>
+
+  </div>
+
+  <router-view/>
+
+  <footer class="footer">
+
+    <div id="container">
+      Server: {{ baseUrl }}
+    </div>
+
+  </footer>
+
+</div>

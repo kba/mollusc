@@ -1,0 +1,30 @@
+<div class="container">
+  <p><button class="button is-success" @click="fetchSessions">Refresh</button></p>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Engine</th>
+        <th>Version</th>
+        <th>State</th>
+        <th>Epochs</th>
+        <th>Checkpoints</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        v-for="session in sessions"
+        :key="session.id"
+        >
+        <td>
+          <router-link :to="`/session/${session.id}`">{{ session.id }}</router-link>
+        </td>
+        <td>{{ session.config.engineName }}</td>
+        <td>{{ session.config.engineVersion }}</td>
+        <td>{{ session.state }}</td>
+        <td>{{ session.epochs.length }}</td>
+        <td>{{ session.checkpoints.length }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

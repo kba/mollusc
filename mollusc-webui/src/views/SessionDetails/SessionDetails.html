@@ -1,0 +1,87 @@
+<div class=SessionDetails--container>
+  <button class="button is-success" @click="fetchSessions">Refresh</button>
+  <section class="accordions">
+
+    <article class="accordion is-active">
+      <div class="accordion-header toggle">
+        <p>Session info</p>
+      </div>
+      <div class="accordion-body">
+        <div class="accordion-content">
+          <table class="table">
+            <tbody>
+              <tr><th>ID</th><td>{{ id }}</td></tr>
+              <tr><th>State</th><td>{{ session.state }}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+
+    <article class="accordion">
+      <div class="accordion-header">
+        <p>Config</p>
+        <button class="toggle" aria-label="toggle"></button>
+      </div>
+      <div class="accordion-body">
+        <div class="accordion-content">
+          <pre class="has-text-left">{{ session.config }} x</pre>
+        </div>
+      </div>
+    </article>
+
+    <article class="accordion">
+      <div class="accordion-header">
+        <p>STDOUT log</p>
+        <button class="toggle" aria-label="toggle"></button>
+      </div>
+      <div class="accordion-body">
+        <div class="accordion-content">
+          <table class="table">
+            <tr
+              v-for="entry, idx in session.log"
+              :key="idx"
+              >
+              <td><code>{{ entry }}</code></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </article>
+
+    <article class="accordion">
+      <div class="accordion-header">
+        <p>Epochs</p>
+        <button class="toggle" aria-label="toggle"></button>
+      </div>
+      <div class="accordion-body">
+        <div class="accordion-content">
+          <GChart
+            type="LineChart"
+            :data="cerChartData"
+            :options="cerChartOptions"
+            />
+          <table class="table">
+            <tr>
+              <th>#</th>
+              <th>CER</th>
+              <th>Accuracy</th>
+              <th>chars</th>
+            </tr>
+            <tr
+              v-for="[dt, data], idx in session.epochs"
+              :key="idx"
+              >
+              <td>{{ data.iteration }}</td>
+              <td>{{ data.error }}</td>
+              <td>{{ data.accuracy }}</td>
+              <td>{{ data.chars }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+</div>
