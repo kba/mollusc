@@ -39,6 +39,9 @@ module.exports = class MolluscServer {
       }
     })
 
+    // Restore all sessions
+    engineManager.restoreAllSessions()
+
     const app = express()
 
     // request logging middleware

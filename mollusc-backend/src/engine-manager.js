@@ -1,7 +1,12 @@
-const getSchema = require('./schemas')
 const {join} = require('path')
-const log = require('@ocrd/mollusc-shared').createLogger('engine-manager')
 const mkdirp = require('mkdirp')
+const {readdir, readFileSync} = require('fs')
+
+const getSchema = require('./schemas')
+const Session = require('./session')
+const {STOPPED, ERROR} = require('./session/states')
+
+const log = require('@ocrd/mollusc-shared').createLogger('engine-manager')
 
 module.exports = class EngineManager {
 
@@ -27,6 +32,47 @@ module.exports = class EngineManager {
 
   listEngines() {
     return this._engines.map(engine => {return [engine.name, engine.version]})
+  }
+
+  restoreAllSessions() {
+    readdir(join(this.dataDir, 'sessions'), (err, sessionIds) => {
+      sessionIds.forEach(sessionId => this.restoreSession(sessionId))
+    })
+  }
+
+  restoreSession(sessionId) {
+    const sessionFile = join(this.dataDir, 'sessions', sessionId, 'session.json')
+    log.info(`Restoring session ${sessionId} from ${sessionFile}`)
+    let sessionJson
+    try {
+      sessionJson = JSON.parse(readFileSync(sessionFile))
+
+      // Validate general schema correctness and add default values
+      getSchema('training')(sessionJson.config)
+
+      // Make sure engine is registered
+      const {engineName, engineVersion} = sessionJson.config
+      const engineClass = this.getEngine(engineName, engineVersion)
+      if (!engineClass)
+        throw new Error(`No such engine "${engineName}_${engineVersion}". Available: ${this.listEngines().map(t => t.join(' '))}`)
+
+      // Validate the engine is happy about the config
+      engineClass.validateSessionConfig(sessionJson.config)
+
+
+      // Mark as stoppped unless STOPPED or ERROR (these aren't running processes!)
+      if (sessionJson.state !== STOPPED && sessionJson.state !== ERROR) {
+        sessionJson.state = STOPPED
+      }
+      const instance = new engineClass(sessionId, new Session(sessionJson))
+
+      this.addInstance(instance)
+      return instance
+
+    } catch (err) {
+      log.error(`Failed to restore Session ${sessionFile}: ${err}`)
+      console.log(err)
+    }
   }
 
   /**
@@ -62,7 +108,7 @@ module.exports = class EngineManager {
 
     // Create a new engine instance
     const instance = new engineClass(sessionId, sessionConfig)
-    this._queue.push(instance)
+    this.addInstance(instance)
 
     // Attach error handler
     instance.on('ERROR', (exitCode, error) => {
@@ -85,7 +131,11 @@ module.exports = class EngineManager {
     if (typeof idOrSession !== 'string') {
       idOrSession = idOrSession.id
     }
-    return this._queue.find(instance => instance.id = idOrSession)
+    return this._queue.find(instance => instance.id === idOrSession)
+  }
+
+  addInstance(instance) {
+    this._queue.push(instance)
   }
 
 }

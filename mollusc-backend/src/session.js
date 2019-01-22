@@ -5,13 +5,17 @@ const {NEW} = require('./session/states')
 module.exports = class TrainingSession {
 
   constructor(id, config) {
-    this.id = id
-    this.config = config
-    this.state = NEW
-    this.checkpoints = []
-    this.epochs = []
-    this.log = []
-    this.env = {}
+    if (typeof id === 'string') {
+      this.id = id
+      this.config = config
+      this.state = NEW
+      this.checkpoints = []
+      this.epochs = []
+      this.log = []
+      this.env = {}
+    } else {
+      Object.assign(this, id)
+    }
   }
 
   addCheckpoint(data) {

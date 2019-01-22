@@ -33,11 +33,11 @@ module.exports = class BaseEngine extends EventEmitter {
     super()
     this.id = id
     // Create a Session object
-    this.session = new Session(id, sessionConfig)
+    this.session = sessionConfig instanceof Session ? sessionConfig : new Session(id, sessionConfig)
     this.child_process = null
     this._stderr = []
 
-    const {cwd}      = sessionConfig
+    const {cwd}      = this.session.config
     this.gtDir       = join(cwd, 'groundTruthBag')
     this.sessionFile = join(cwd, 'session.json')
   }

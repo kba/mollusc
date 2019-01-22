@@ -9,6 +9,7 @@ module.exports = function gtRoute(server) {
     const instance = (id === 'latest')
       ? engineManager.listInstances().pop()
       : engineManager.getInstanceById(id)
+    // console.log({id, instance})
     if (!instance)
       return resp.status(404).send("No such session")
     const {session} = instance
