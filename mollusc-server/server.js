@@ -1,6 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const fileUpload = require('express-fileupload')
+const {corsMiddleware} = require('@kba/node-utils')
 
 const log = require('@ocrd/mollusc-shared').createLogger('server')
 const {EngineManager, engines} = require('@ocrd/mollusc-backend')
@@ -17,6 +18,7 @@ module.exports = class MolluscServer {
       limits: {fileSize: 50 * 1024 * 1024},
     })
 
+    // CORS middleware
     Object.assign(this, {
       trafMiddleware,
       uploadMiddleware,
@@ -43,6 +45,8 @@ module.exports = class MolluscServer {
     engineManager.restoreAllSessions()
 
     const app = express()
+
+    app.use(corsMiddleware())
 
     // request logging middleware
     app.use(morgan('dev', {
