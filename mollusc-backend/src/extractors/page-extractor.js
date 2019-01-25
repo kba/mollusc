@@ -9,7 +9,8 @@ if (process.env.HTTP_PROXY) {
   Object.assign(fetchOptions, {agent: new HttpsProxyAgent(process.env.HTTP_PROXY)})
 }
 
-class PageImporter {
+module.exports =
+class PageLineExtractor {
 
   constructor() {
     this.parser = new DOMParser()
@@ -44,18 +45,3 @@ class PageImporter {
   }
 
 }
-module.exports = PageImporter
-
-;(async function() {
-  const fs = require('fs')
-  const FILE = '/data/monorepo/assets/data/kant_aufklaerung_1784-page-block-line-word/data/OCR-D-GT-SEG-WORD/OCR-D-GT-SEG-WORD_0001'
-  const FILEDATA = fs.readFileSync(FILE, {encoding: 'utf8'})
-  const importer = new PageImporter()
-  const extracted = importer.extract(FILEDATA)
-  console.log(extracted)
-  console.log(extracted.imageFilename)
-  const resp = await importer.resolveUrlToFile(extracted.imageFilename)
-  console.log(Buffer.from(resp.bodyData))
-})()
-// console.log(extracted.textLines[0])
-

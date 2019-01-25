@@ -10,7 +10,7 @@ const log = require('@ocrd/mollusc-shared').createLogger('engine-manager')
 
 module.exports = class EngineManager {
 
-  constructor({baseUrl, dataDir}) {
+  constructor({baseUrl, dataDir}={}) {
     this._engines = []
     this._queue = []
     this.dataDir = dataDir

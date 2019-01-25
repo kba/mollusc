@@ -3,4 +3,5 @@ module.exports = {
   schemas: require('./src/schemas'),
   EngineManager: require('./src/engine-manager'),
   engines: require('./src/engine'),
+  extractors: require('./src/extractors'),
 }

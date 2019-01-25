@@ -18,37 +18,37 @@ tap.test('engine-manager', t => {
     t.end()
   })
 
-  t.test('start session', t => {
-    const mgr = new EngineManager()
-    mgr.registerEngine(engineClass)
-    const sessionConfig = {
-      engineName: engineClass.name,
-      engineVersion: engineClass.version,
-      engineArguments: [
-        // '--help',
-        ...glob.sync(`${__dirname}/assets/gt-bag-testset/data/ground-truth/f*.tif`)
-      ],
-    }
-    const engine = mgr.createSession(sessionConfig)
-    engine.on('ERROR', (...args) => {
-      console.log('ERROR', ...args)
-      t.end()
-    })
-    engine.on('STOPPED', () => {
-      console.log(engine.session)
-      t.end()
-    })
-    engine.on('STARTED', () => {
-      // setTimeout(() => engine.stop(), 2000)
-      // engine.pause()
-      // console.log(engine.session)
-      // engine.resume()
-      console.log(engine.session)
-      // console.log({session})
-    })
-    engine.start()
+  // t.test('start session', t => {
+  //   const mgr = new EngineManager()
+  //   mgr.registerEngine(engineClass)
+  //   const sessionConfig = {
+  //     engineName: engineClass.name,
+  //     engineVersion: engineClass.version,
+  //     engineArguments: [
+  //       // '--help',
+  //       ...glob.sync(`${__dirname}/assets/gt-bag-testset/data/ground-truth/f*.tif`)
+  //     ],
+  //   }
+  //   const engine = mgr.createSession(sessionConfig)
+  //   engine.on('ERROR', (...args) => {
+  //     console.log('ERROR', ...args)
+  //     t.end()
+  //   })
+  //   engine.on('STOPPED', () => {
+  //     console.log(engine.session)
+  //     t.end()
+  //   })
+  //   engine.on('STARTED', () => {
+  //     // setTimeout(() => engine.stop(), 2000)
+  //     // engine.pause()
+  //     // console.log(engine.session)
+  //     // engine.resume()
+  //     console.log(engine.session)
+  //     // console.log({session})
+  //   })
+  //   engine.start()
 
-  })
+  // })
 
   t.end()
 })
