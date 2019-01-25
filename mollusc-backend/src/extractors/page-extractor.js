@@ -1,30 +1,23 @@
 const xpath = require('xpath')
 const {DOMParser} = require('xmldom')
-const {idiomaticFetch, fetch} = require('@kba/node-utils')
-const HttpsProxyAgent = require('https-proxy-agent')
-Object.assign(idiomaticFetch, {fetch})
-
-const fetchOptions = {redirect: 'follow'}
-if (process.env.HTTP_PROXY) {
-  Object.assign(fetchOptions, {agent: new HttpsProxyAgent(process.env.HTTP_PROXY)})
-}
+const BaseExtractor = require('./base')
 
 module.exports =
-class PageLineExtractor {
+class PageLineExtractor extends BaseExtractor {
 
-  constructor() {
+  constructor(...args) {
+    super(...args)
     this.parser = new DOMParser()
     this.select = xpath.useNamespaces({'pg': 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2018-07-15'})
   }
 
-  async resolveUrlToFile(url) {
-    // if (!(url.match(/^https?:\/\//))) {
-    //   return url
-    // }
-    return idiomaticFetch(url, fetchOptions, 'arrayBuffer')
+  /** @override */
+  async parse(url) {
+    const buf = this._resolveToBuffer(url)
   }
 
-  extract(xmlstr) {
+  /** @override */
+  async extract(xmlstr) {
     const {parser, select} = this
     const xmldoc = parser.parseFromString(xmlstr)
     const imageFilename = select('/pg:PcGts/pg:Page/@imageFilename', xmldoc, true).nodeValue
