@@ -41,18 +41,26 @@ build: copy-schemas
 	# $(LERNA) bootstrap --hoist
 
 # Copy schemas from spec to the implementation
-copy-schemas: $(IMPL_NAME)-backend/src/schemas/training-schema.json
+copy-schemas: \
+	$(IMPL_NAME)-backend/src/schemas/training-schema.json \
+	$(IMPL_NAME)-backend/src/schemas/single-line.json
 
 $(IMPL_NAME)-backend/src/schemas/training-schema.json: spec/training-schema.json
 	cp $< $@
 
+$(IMPL_NAME)-backend/src/schemas/single-line.json: spec/single-line.json
+	cp $< $@
+
 # Generate the derived data in spec
-spec: spec/training-schema.json spec/gt-profile.json
+spec: spec/training-schema.json spec/gt-profile.json spec/single-line.json
 
 spec/training-schema.json: spec/training-schema.yml
 	$(TRAF) $< $@
 
 spec/gt-profile.json: spec/gt-profile.yml
+	$(TRAF) $< $@
+
+spec/single-line.json: spec/single-line.yml
 	$(TRAF) $< $@
 
 .PHONY: test
