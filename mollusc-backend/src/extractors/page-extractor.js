@@ -16,13 +16,13 @@ class PageLineExtractor extends BaseExtractor {
     const {parser, select} = this
     const xmlstr = await this._resolveToString(url)
     const xmldoc = parser.parseFromString(xmlstr)
-    const imageFilename = select('/pg:PcGts/pg:Page/@imageFilename', xmldoc, true).nodeValue
+    const imageUrl = select('/pg:PcGts/pg:Page/@imageFilename', xmldoc, true).nodeValue
     const textLines = select("//pg:TextLine", xmldoc).map(textLine => {
       const transcription = select('./pg:TextEquiv/pg:Unicode/text()', textLine, true).nodeValue
       const coords = select('./pg:Coords/@points', textLine, true).nodeValue.split(' ').map(xy => xy.split(',').map(s => parseInt(s)))
-      const id = select('@id', textLine, true).nodeValue
+      const lineId = select('@id', textLine, true).nodeValue
       return {
-        id,
+        lineId,
         coords,
         transcription
       }
@@ -31,9 +31,10 @@ class PageLineExtractor extends BaseExtractor {
       mnemonic: url
         .replace(/^.*\//, '')
         .replace(/[^a-z0-9]/gi, ''),
-      ...docMetadata,
-      imageFilename,
+      imageUrl,
+      pageUrl: url,
       textLines,
+      ...docMetadata,
     }
   }
 
