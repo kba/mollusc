@@ -12,13 +12,9 @@ class PageLineExtractor extends BaseExtractor {
   }
 
   /** @override */
-  async parse(url) {
-    const buf = this._resolveToBuffer(url)
-  }
-
-  /** @override */
-  async extract(xmlstr) {
+  async parse(url, docMetadata) {
     const {parser, select} = this
+    const xmlstr = await this._resolveToString(url)
     const xmldoc = parser.parseFromString(xmlstr)
     const imageFilename = select('/pg:PcGts/pg:Page/@imageFilename', xmldoc, true).nodeValue
     const textLines = select("//pg:TextLine", xmldoc).map(textLine => {
@@ -32,6 +28,10 @@ class PageLineExtractor extends BaseExtractor {
       }
     })
     return {
+      mnemonic: url
+        .replace(/^.*\//, '')
+        .replace(/[^a-z0-9]/gi, ''),
+      ...docMetadata,
       imageFilename,
       textLines,
     }

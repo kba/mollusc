@@ -11,6 +11,8 @@ server --> backend
 cli --> shared
 cli --> backend
 cli --> server
+
+webui
 ~~~
 
 ## Data Model
@@ -47,6 +49,19 @@ Passed to engine at instantiation, serves as exchange object, easily serializabe
 - epochs
   - structured log by parsing output
   - every epoch has e.g. current xyz error rate etc.
+
+## Extracting ground truth
+
+### BaseExtractor
+
+* methods for resolving URLs to
+  * [x] Buffer
+  * [ ] File
+  * [x] String
+* Two-step process:
+  * Parse the structure for possible lines to extract
+    * Return an array of "documents" with a list of textLines
+  * Extract a list of lines
 
 ---
 
