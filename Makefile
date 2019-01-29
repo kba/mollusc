@@ -52,7 +52,10 @@ $(IMPL_NAME)-backend/src/schemas/single-line.json: spec/single-line.json
 	cp $< $@
 
 # Generate the derived data in spec
-spec: spec/training-schema.json spec/gt-profile.json spec/single-line.json
+spec: spec/gt-spec.md
+
+spec/gt-spec.md: spec/training-schema.json spec/gt-profile.json spec/single-line.json
+	shinclude -c xml -i spec/gt-spec.md 2>/dev/null
 
 spec/training-schema.json: spec/training-schema.yml
 	$(TRAF) $< $@

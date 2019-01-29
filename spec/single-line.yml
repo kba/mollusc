@@ -21,6 +21,9 @@ properties:
   bagUrl:
     description: URL of the bag that contains the page
     type: string
+  metsUrl:
+    description: URL of the METS document that contains the page
+    type: string
   lineId:
     description: ID of the line within the PAGE-XML doc
     type: string

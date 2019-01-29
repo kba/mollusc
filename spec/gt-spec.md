@@ -142,114 +142,40 @@ Line metadata can be encoded in JSON or YAML (depending on
 
 Line metadata mustt adhere to this JSON schema:
 
-<!-- BEGIN-EVAL -w '```yaml' '```' -- cat ./spec/gt-profile.yml -->
+<!-- BEGIN-EVAL -w '```yaml' '```' -- cat ./spec/single-line.yml -->
 ```yaml
-BagIt-Profile-Info:
-  BagIt-Profile-Identifier: https://ocr-d.github.io/gt-profile.json
-  BagIt-Profile-Version: '1.2.0'
-  Source-Organization: OCR-D
-  External-Description: BagIt profile for OCR line Ground Truth
-  Contact-Name: Konstantin Baierer
-  Contact-Email: konstantin.baierer@sbb.spk-berlin.de
-  Version: 0.1
-Bag-Info:
-  Bagging-Date:
-    required: false
-  Source-Organization:
-    required: false
-  Gt-Transcription-Extension:
-    required: false
-    default: '.gt.txt'
-  Gt-Transcription-Media-Type:
-    required: false
-    default: 'text/plain'
-  Gt-Transcription-Directory:
-    required: false
-    default: 'text'
-  Gt-Transcription-Normalization:
-    required: false
-    default: 'NFKC'
-    values:
-      - NFD
-      - NFKD
-      - NFC
-      - NFKC
-  Gt-Color-Image-Extension:
-    required: false
-    default: '.color.png'
-  Gt-Color-Image-Media-Type:
-    required: false
-    default: 'image/png'
-    values:
-      - 'image/png'
-      - 'image/tiff'
-      - 'image/jpeg'
-  Gt-Color-Image-Directory:
-    required: false
-    default: 'img'
-  Gt-Grayscale-Image-Extension:
-    required: false
-    default: '.nrm.png'
-  Gt-Grayscale-Image-Media-Type:
-    required: false
-    default: 'image/png'
-    values:
-      - 'image/png'
-      - 'image/tiff'
-      - 'image/jpeg'
-  Gt-Grayscale-Image-Directory:
-    required: false
-    default: 'grayscale'
-  Gt-Bitonal-Image-Extension:
-    required: false
-    default: '.bin.png'
-  Gt-Bitonal-Image-Media-Type:
-    required: false
-    default: 'image/png'
-    values:
-      - 'image/png'
-      - 'image/tiff'
-      - 'image/jpeg'
-  Gt-Bitonal-Image-Directory:
-    required: false
-    default: 'bin'
-  Gt-Line-Metadata-Extension:
-    required: false
-    default: '.json'
-  Gt-Line-Metadata-Media-Type:
-    required: false
-    default: 'application/json'
-    values:
-      - 'application/json'
-      - 'text/vnd.yaml'
-  Gt-Line-Metadata-Directory:
-    required: false
-    default: 'meta'
-  Gt-Directory:
-    required: false
-    default: 'ground-truth'
-  Gt-Directory-Structure:
-    required: false
-    default: 'flat'
-    values:
-      # img and transcription in the Gt-Directory
-      - 'flat'
-      # img and transcription in the same dir below Gt-Directory
-      - 'flat-nested'
-      # img and transcription in subfolders Gt-Bitonal-Image-Directory and Gt-Transcription-Directory of Gt-Directory
-      - 'subfolders'
-      # img and transcription in subfolders Gt-Bitonal-Image-Directory and Gt-Transcription-Directory in the same dir below Gt-Directory
-      - 'subfolders-nested'
-Manifests-Required: ['sha512']
-Tag-Manifests-Required: []
-Tag-Files-Required: []
-Tag-Files-Allowed:
-  - README.md
-Allow-Fetch.txt: false
-Serialization: allowed
-Accept-Serialization: application/zip
-Accept-BagIt-Version:
-  - '1.0'
+description: Schema for provenance of single lines
+type: object
+required:
+  - coords
+  - imageUrl
+properties:
+  coords:
+    description: Coordinates as array of x-y-pairs
+    type: array
+    items:
+      type: array
+      length: 2
+      items:
+        type: number
+  pageUrl:
+    description: URL of the page (resp. URL the PAGE-XML file)
+    type: string
+  imageUrl:
+    description: URL of the image (resp. the `pg:imageFilename` in the PAGE-XML file)
+    type: string
+  bagUrl:
+    description: URL of the bag that contains the page
+    type: string
+  metsUrl:
+    description: URL of the METS document that contains the page
+    type: string
+  lineId:
+    description: ID of the line within the PAGE-XML doc
+    type: string
+  xpath:
+    description: XPath to the line if no `fileId` was provided
+    type: string
 ```
 
 <!-- END-EVAL -->
@@ -264,5 +190,7 @@ Accept-BagIt-Version:
 [`Gt-Transcription-Directory`]: #gt-transcription-directory
 [`Gt-Directory-Structure`]: #gt-directory-structure
 [`Gt-Line-Metadata-Directory`]: #gt-bitonal-image-directory
+[`Gt-Line-Metadata-Extension`]: #gt-line-metadata-extension
+[`Gt-Line-Metadata-Media-Type`]: #gt-line-metadata-media-type
 [BagIt Profile]: #bagit-profile
 [line metadata]: #line-metadata
