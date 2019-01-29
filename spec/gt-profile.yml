@@ -17,6 +17,9 @@ Bag-Info:
   Gt-Transcription-Media-Type:
     required: false
     default: 'text/plain'
+  Gt-Transcription-Directory:
+    required: false
+    default: 'text'
   Gt-Transcription-Normalization:
     required: false
     default: 'NFKC'
@@ -25,6 +28,32 @@ Bag-Info:
       - NFKD
       - NFC
       - NFKC
+  Gt-Color-Image-Extension:
+    required: false
+    default: '.color.png'
+  Gt-Color-Image-Media-Type:
+    required: false
+    default: 'image/png'
+    values:
+      - 'image/png'
+      - 'image/tiff'
+      - 'image/jpeg'
+  Gt-Color-Image-Directory:
+    required: false
+    default: 'img'
+  Gt-Grayscale-Image-Extension:
+    required: false
+    default: '.nrm.png'
+  Gt-Grayscale-Image-Media-Type:
+    required: false
+    default: 'image/png'
+    values:
+      - 'image/png'
+      - 'image/tiff'
+      - 'image/jpeg'
+  Gt-Grayscale-Image-Directory:
+    required: false
+    default: 'grayscale'
   Gt-Bitonal-Image-Extension:
     required: false
     default: '.bin.png'
@@ -35,6 +64,21 @@ Bag-Info:
       - 'image/png'
       - 'image/tiff'
       - 'image/jpeg'
+  Gt-Bitonal-Image-Directory:
+    required: false
+    default: 'bin'
+  Gt-Line-Metadata-Extension:
+    required: false
+    default: '.json'
+  Gt-Line-Metadata-Media-Type:
+    required: false
+    default: 'application/json'
+    values:
+      - 'application/json'
+      - 'text/vnd.yaml'
+  Gt-Line-Metadata-Directory:
+    required: false
+    default: 'meta'
   Gt-Directory:
     required: false
     default: 'ground-truth'
