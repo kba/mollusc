@@ -1,8 +1,6 @@
 # Name of the software. Default: $(IMPL_NAME)
 IMPL_NAME = mollusc
 
-TRAF = traf
-
 LERNA = lerna --loglevel debug --sort 
 
 # Tests to run
@@ -18,7 +16,7 @@ help:
 	@echo "    deps          npm install"
 	@echo "    build         lerna bootstrap"
 	@echo "    copy-schemas  Copy schemas from spec to the implementation"
-	@echo "    spec          Generate the derived data in spec"
+	@echo "    repo/spec     Clone OCR-D/spec to ./repo/spec"
 	@echo "    test          Run tests"
 	@echo "    repo/assets   Clone OCR-D/assets to ./repo/assets"
 	@echo "    assets-clean  Remove assets"
@@ -42,29 +40,20 @@ build: copy-schemas
 
 # Copy schemas from spec to the implementation
 copy-schemas: \
+	repo/spec \
 	$(IMPL_NAME)-backend/src/schemas/training-schema.json \
 	$(IMPL_NAME)-backend/src/schemas/single-line.json
 
-$(IMPL_NAME)-backend/src/schemas/training-schema.json: spec/training-schema.json
+$(IMPL_NAME)-backend/src/schemas/training-schema.json: repo/spec/training-schema.json
 	cp $< $@
 
-$(IMPL_NAME)-backend/src/schemas/single-line.json: spec/single-line.json
+$(IMPL_NAME)-backend/src/schemas/single-line.json: repo/spec/single-line.json
 	cp $< $@
 
-# Generate the derived data in spec
-spec: spec/gt-spec.md
-
-spec/gt-spec.md: spec/training-schema.json spec/gt-profile.json spec/single-line.json
-	shinclude -c xml -i spec/gt-spec.md 2>/dev/null
-
-spec/training-schema.json: spec/training-schema.yml
-	$(TRAF) $< $@
-
-spec/gt-profile.json: spec/gt-profile.yml
-	$(TRAF) $< $@
-
-spec/single-line.json: spec/single-line.yml
-	$(TRAF) $< $@
+# Clone OCR-D/spec to ./repo/spec
+repo/spec:
+	mkdir -p $(dir $@)
+	git clone https://github.com/OCR-D/spec "$@"
 
 .PHONY: test
 # Run tests
