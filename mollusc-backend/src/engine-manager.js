@@ -36,6 +36,7 @@ module.exports = class EngineManager {
 
   restoreAllSessions() {
     readdir(join(this.dataDir, 'sessions'), (err, sessionIds) => {
+      if (err) return
       sessionIds.forEach(sessionId => this.restoreSession(sessionId))
     })
   }

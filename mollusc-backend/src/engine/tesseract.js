@@ -9,8 +9,8 @@ let __version = null
  */
 module.exports = class TesseractEngine extends BaseEngine {
 
+  static get capabilities() {return ['training']}
   static get name() {return 'tesseract'}
-
   static get version() {
     if (__version)
       return __version

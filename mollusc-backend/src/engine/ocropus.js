@@ -12,7 +12,7 @@ let __version = null
 module.exports = class OcropusEngine extends BaseEngine {
 
   static get name() {return 'ocropus'}
-
+  static get capabilities() {return ['training']}
   static get version() {
     if (__version)
       return __version

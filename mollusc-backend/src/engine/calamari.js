@@ -12,6 +12,8 @@ let __version = null
  */
 module.exports = class CalamariEngine extends BaseEngine {
 
+  static get capabilities() {return ['training']}
+
   static get name() {return 'calamari'}
 
   static get version() {

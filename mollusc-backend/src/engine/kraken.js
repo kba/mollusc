@@ -12,7 +12,7 @@ let __version = null
 module.exports = class KrakenEngine extends BaseEngine {
 
   static get name() {return 'kraken'}
-
+  static get capabilities() {return ['training']}
   static get version() {
     if (__version)
       return __version
