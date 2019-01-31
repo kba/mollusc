@@ -1,0 +1,17 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/mollusc-build
+    docker:
+      - image: circleci/node:11
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+            - ./*/node_modules
+      - run: make test
