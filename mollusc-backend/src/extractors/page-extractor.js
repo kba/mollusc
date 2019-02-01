@@ -2,6 +2,8 @@ const xpath = require('xpath')
 const {DOMParser} = require('xmldom')
 const BaseExtractor = require('./base')
 
+const log = require('@ocrd/mollusc-shared').createLogger('page-extractor')
+
 module.exports =
 class PageLineExtractor extends BaseExtractor {
 
@@ -14,6 +16,7 @@ class PageLineExtractor extends BaseExtractor {
   /** @override */
   async parse(url, docMetadata) {
     const {parser, select} = this
+    log.debug(`Parsing PAGE XML: ${url}`)
     const xmlstr = await this._resolveToString(url)
     const xmldoc = parser.parseFromString(xmlstr)
     const imageUrl = select('/pg:PcGts/pg:Page/@imageFilename', xmldoc, true).nodeValue

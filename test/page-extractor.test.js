@@ -1,4 +1,5 @@
 const t = require('tap')
+const log = require('@ocrd/mollusc-shared').createLogger('test')
 
 const {PageExtractor} = require('@ocrd/mollusc-backend').extractors
 const asset = p => `${__dirname}/assets/${p}`
@@ -14,16 +15,16 @@ t.test('page-extractor', async t => {
   t.plan(1)
 
   t.beforeEach(done => {
-    console.log(`beforeEach - creating empty dir ${TEMP_FOLDER}`)
+    log.debug(`beforeEach - creating empty dir ${TEMP_FOLDER}`)
     rimraf.sync(TEMP_FOLDER)
     mkdirp.sync(TEMP_FOLDER)
     done()
   })
 
-  // t.tearDown(done => {
-  //   console.log(`tearDown - deleting ${TEMP_FOLDER}`)
-  //   rimraf.sync(TEMP_FOLDER)
-  // })
+  t.tearDown(done => {
+    log.debug(`tearDown - deleting ${TEMP_FOLDER}`)
+    rimraf.sync(TEMP_FOLDER)
+  })
 
   t.test('page-extractor: extract images', async t => {
 

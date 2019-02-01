@@ -76,4 +76,4 @@ assets-clean:
 assets: repo/assets
 	mkdir -p test/assets/line-ground-truth
 	cp -r -t test/assets repo/assets/data/*
-	cp -r -t test/assets/line-ground-truth repo/assets/gt-data/*
+	cp -r -t test/assets/line-ground-truth repo/assets/linegt/*

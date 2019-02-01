@@ -18,7 +18,7 @@ module.exports = {
         format.timestamp({
           format: 'YYYY-MM-DD HH:mm:ss'
         }),
-        format.printf(info => `${info.timestamp} - [${info.level}] - ${name}: ${info.message}`)
+        format.printf(info => `${info.timestamp} [${info.level}] \x1b[35;1m${name}\x1b[0m: ${info.message}`)
       ),
       transports: [consoleTransport]
     }
