@@ -68,7 +68,10 @@ class KrakenTrainer extends BaseEngine {
       })
     } else if (line.match("Saving to ")) {
       line.replace(/Saving to ([^\s]+)/, (_, checkpointBasename) => {
-        ret = ['addCheckpoint', join(this.session.config.cwd, `${checkpointBasename}.mlmodel`)]
+        ret = ['addCheckpoint', {
+          path: join(this.session.config.cwd, `${checkpointBasename}.mlmodel`),
+          mediaType: 'application/vnd.ocrd.coreml',
+        }]
       })
     }
     return ret

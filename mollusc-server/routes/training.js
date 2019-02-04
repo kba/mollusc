@@ -20,7 +20,7 @@ module.exports = function trainingRoute(server) {
   function sendSession(req, resp) {
     const {session} = req
     resp.set('Content-Type', 'application/json')
-    resp.set('Location', `${baseUrl}/session/${session.id}`)
+    resp.set('Location', `${baseUrl}/training/${session.id}`)
     resp.send(session)
   }
 
@@ -41,25 +41,11 @@ module.exports = function trainingRoute(server) {
     return sendSession(req, resp)
   })
 
-  app.post('/recognize', trafMiddleware, (req, resp) => {
-    try {
-      const {id, session} = engineManager.createRecognitionSession(req.body)
-      resp.set('Content-Type', 'application/json')
-      resp.set('Location', `${baseUrl}/session/${id}`)
-      resp.send(session)
-    } catch (error) {
-      console.log(error)
-      log.warn(error)
-      resp.status(400)
-      resp.send({message: "Invalid config", error})
-    }
-  })
-
   app.post('/', trafMiddleware, (req, resp) => {
     try {
       const {id, session} = engineManager.createTrainingSession(req.body)
       resp.set('Content-Type', 'application/json')
-      resp.set('Location', `${baseUrl}/session/${id}`)
+      resp.set('Location', `${baseUrl}/training/${id}`)
       resp.send(session)
     } catch (error) {
       console.log(error)
@@ -74,7 +60,7 @@ module.exports = function trainingRoute(server) {
     if (req.query.full == '1') {
       resp.send(sessions)
     } else  {
-      resp.send(sessions.map(session => `${baseUrl}/session/${session.id}`))
+      resp.send(sessions.map(session => `${baseUrl}/training/${session.id}`))
     }
   })
 
