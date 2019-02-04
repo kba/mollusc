@@ -12,7 +12,7 @@ module.exports = class EngineManager {
 
   constructor({baseUrl, dataDir}={}) {
     this._engines = []
-    this._queue = []
+    this._trainingQueue = []
     this.dataDir = dataDir
     this.baseUrl = baseUrl
   }
@@ -136,18 +136,18 @@ module.exports = class EngineManager {
   }
 
   listTrainingInstances() {
-    return [...this._queue]
+    return [...this._trainingQueue]
   }
 
   getTrainingInstanceById(idOrSession) {
     if (typeof idOrSession !== 'string') {
       idOrSession = idOrSession.id
     }
-    return this._queue.find(trainingInstance => trainingInstance.id === idOrSession)
+    return this._trainingQueue.find(trainingInstance => trainingInstance.id === idOrSession)
   }
 
   addTrainingInstance(trainingInstance) {
-    this._queue.push(trainingInstance)
+    this._trainingQueue.push(trainingInstance)
   }
 
 }

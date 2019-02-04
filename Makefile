@@ -41,10 +41,14 @@ build: copy-schemas
 # Copy schemas from spec to the implementation
 copy-schemas: \
 	repo/spec \
+	$(IMPL_NAME)-backend/src/schemas/recognition-schema.json \
 	$(IMPL_NAME)-backend/src/schemas/training-schema.json \
 	$(IMPL_NAME)-backend/src/schemas/single-line.json
 
 $(IMPL_NAME)-backend/src/schemas/training-schema.json: repo/spec/training-schema.json
+	cp $< $@
+
+$(IMPL_NAME)-backend/src/schemas/recognition-schema.json: repo/spec/recognition-schema.json
 	cp $< $@
 
 $(IMPL_NAME)-backend/src/schemas/single-line.json: repo/spec/single-line.json
