@@ -9,6 +9,7 @@ jobs:
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run: npm install
+      - run: make lerna
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
