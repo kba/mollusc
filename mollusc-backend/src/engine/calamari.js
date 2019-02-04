@@ -10,11 +10,34 @@ let __version = null
 /**
  * Train with ketos
  */
-module.exports = class CalamariEngine extends BaseEngine {
-
-  static get capabilities() {return ['training']}
+module.exports = class CalamariEngine {
 
   static get name() {return 'calamari'}
+  static get trainer() {return CalamariTrainer}
+  static get recognizer() {return CalamariRecognizer}
+  static get version() {return CalamariTrainer.version}
+}
+
+/**
+ * Recognize with calamari
+ */
+class CalamariRecognizer extends BaseEngine {
+
+  static get name() {return 'calamari'}
+  static get version() {
+    if (__version)
+      return __version
+    else {
+      const resp = spawnSync('calamari-predict', ['--version'], {encoding: 'utf8'})
+      if (resp.error) throw resp.error
+      __version = resp.stdout.replace('calamari-predict v', '').trim()
+      return __version
+    }
+  }
+}
+
+
+class CalamariTrainer extends BaseEngine {
 
   static get version() {
     if (__version)
@@ -39,7 +62,7 @@ module.exports = class CalamariEngine extends BaseEngine {
     let ret = line
     if (line.match(/^#\d+:/)) {
       line.replace(/^#(\d+): .* ler=(\d+.\d+)/, (_, iteration, error) => {
-        ret = ['addEpoch', {
+        ret = ['addIteration', {
           iteration: parseInt(iteration),
           error: parseFloat(error),
           accuracy: -1,

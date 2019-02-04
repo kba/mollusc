@@ -68,8 +68,8 @@ module.exports = class MolluscServer {
       resp.send(engineManager)
     })
 
-    log.info("Setting up /session")
-    app.use('/session', require('./routes/session')(this))
+    log.info("Setting up /training")
+    app.use('/training', require('./routes/training')(this))
 
     log.info("Setting up /gt")
     app.use('/gt', require('./routes/gt')(this))

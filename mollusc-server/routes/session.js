@@ -1,6 +1,6 @@
 const {Router} = require('express')
 
-module.exports = function gtRoute(server) {
+module.exports = function trainingRoute(server) {
   const {engineManager, baseUrl, trafMiddleware, log} = server
   const app = new Router()
 
@@ -41,9 +41,23 @@ module.exports = function gtRoute(server) {
     return sendSession(req, resp)
   })
 
+  app.post('/recognize', trafMiddleware, (req, resp) => {
+    try {
+      const {id, session} = engineManager.createRecognitionSession(req.body)
+      resp.set('Content-Type', 'application/json')
+      resp.set('Location', `${baseUrl}/session/${id}`)
+      resp.send(session)
+    } catch (error) {
+      console.log(error)
+      log.warn(error)
+      resp.status(400)
+      resp.send({message: "Invalid config", error})
+    }
+  })
+
   app.post('/', trafMiddleware, (req, resp) => {
     try {
-      const {id, session} = engineManager.createSession(req.body)
+      const {id, session} = engineManager.createTrainingSession(req.body)
       resp.set('Content-Type', 'application/json')
       resp.set('Location', `${baseUrl}/session/${id}`)
       resp.send(session)

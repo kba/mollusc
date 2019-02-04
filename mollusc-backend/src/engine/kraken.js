@@ -6,13 +6,37 @@ const {join} = require('path')
 
 let __version = null
 
+module.exports = class KrakenEngine {
+
+  static get name() {return 'kraken'}
+  static get trainer() {return KrakenTrainer}
+  static get recognizer() {return KrakenRecognizer}
+  static get version() {return KrakenTrainer.version}
+}
+
+/**
+ * Recognize with kraken
+ */
+class KrakenRecognizer extends BaseEngine {
+
+  static get name() {return 'kraken'}
+  static get version() {
+    if (__version)
+      return __version
+    else {
+      const resp = spawnSync('kraken', ['--version'], {encoding: 'utf8'})
+      if (resp.error) throw resp.error
+      __version = resp.stdout.replace('kraken, version ', '').trim()
+      return __version
+    }
+  }
+}
+
 /**
  * Train with ketos
  */
-module.exports = class KrakenEngine extends BaseEngine {
+class KrakenTrainer extends BaseEngine {
 
-  static get name() {return 'kraken'}
-  static get capabilities() {return ['training']}
   static get version() {
     if (__version)
       return __version
@@ -23,7 +47,6 @@ module.exports = class KrakenEngine extends BaseEngine {
       return __version
     }
   }
-
   static validateSessionConfig(sessionConfig) {
     if (sessionConfig.outputModelFormat !== 'application/vnd.ocrd.coreml') {
       log.error(`outputModelFormat not supported: ${sessionConfig.outputModelFormat}`)
@@ -36,7 +59,7 @@ module.exports = class KrakenEngine extends BaseEngine {
     let ret = line
     if (line.match(/Accuracy report/)) {
       line.replace(/\((\d+)\) (\d+\.\d+) (\d+) (\d+)/, (_, iteration, accuracy, chars, error) => {
-        ret = ['addEpoch', {
+        ret = ['addIteration', {
           iteration: parseInt(iteration),
           accuracy: parseFloat(accuracy),
           chars: parseInt(chars),
@@ -62,7 +85,7 @@ module.exports = class KrakenEngine extends BaseEngine {
     cmdLine.push('train')
     // Report frequently
     cmdLine.push('--report', 0.2)
-    // Save every epoch
+    // Save every 0.2 epochs
     cmdLine.push('--savefreq', 0.2)
     // custom arguments
     cmdLine.push(...this.session.config.engineArguments)

@@ -1,25 +1,17 @@
-const {spawn, execFileSync} = require('child_process')
+const {spawn} = require('child_process')
 const {eachLine} = require('line-reader')
 const {EventEmitter} = require('events')
-const mkdirp = require('mkdirp')
 const {join} = require('path')
 const {writeFileSync} = require('fs')
 
 const Session = require('../session')
 const {STARTING, NEW, STARTED, PAUSED, STOPPED, ERROR} = require('../session/states')
 
-const log = require('@ocrd/mollusc-shared').createLogger('engine.base')
-
-function unzipTo(zippath, outpath) {
-  mkdirp.sync(outpath)
-  return execFileSync(`unzip`, [zippath], {
-    cwd: outpath,
-    encoding: 'utf8',
-  })
-}
+const {unzipTo, createLogger} = require('@ocrd/mollusc-shared')
+const log = createLogger('engine.base')
 
 /**
- * Base class for all engines
+ * Base class for all trainers/recognizers
  */
 module.exports = class BaseEngine extends EventEmitter {
 

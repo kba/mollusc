@@ -10,7 +10,7 @@ module.exports = class TrainingSession {
       this.config = config
       this.state = NEW
       this.checkpoints = []
-      this.epochs = []
+      this.iterations = []
       this.log = []
       this.env = {}
     } else {
@@ -22,8 +22,8 @@ module.exports = class TrainingSession {
     this.checkpoints.push([new Date(), data])
   }
 
-  addEpoch(data) {
-    this.epochs.push([new Date(), data])
+  addIteration(data) {
+    this.iterations.push([new Date(), data])
   }
 
 }

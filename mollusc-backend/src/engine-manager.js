@@ -21,6 +21,18 @@ module.exports = class EngineManager {
     // check for version to make sure there is one and not an exception
     const {name, version} = engineClass
     if (!(this._engines.includes(engineClass))) {
+      if (!engineClass.trainer) {
+        log.error(`${engineClass.name} has no trainer`)
+        throw new Error(`${engineClass.name} has no trainer`)
+      }
+      if (!engineClass.trainer.validateSessionConfig) {
+        log.error(`${engineClass.name}.trainer has no validateSessionConfig`)
+        throw new Error(`${engineClass.name}.trainer has no validateSessionConfig`)
+      }
+      if (!engineClass.recognizer) {
+        log.error(`${engineClass.name} has no recognizer`)
+        throw new Error(`${engineClass.name} has no recognizer`)
+      }
       log.info(`Registering engine ${name}\tv${version}`)
       this._engines.push(engineClass)
     }
@@ -35,15 +47,15 @@ module.exports = class EngineManager {
   }
 
   restoreAllSessions() {
-    readdir(join(this.dataDir, 'sessions'), (err, sessionIds) => {
+    readdir(join(this.dataDir, 'sessions', 'training'), (err, sessionIds) => {
       if (err) return
-      sessionIds.forEach(sessionId => this.restoreSession(sessionId))
+      sessionIds.forEach(sessionId => this.restoreTrainingSession(sessionId))
     })
   }
 
-  restoreSession(sessionId) {
-    const sessionFile = join(this.dataDir, 'sessions', sessionId, 'session.json')
-    log.info(`Restoring session ${sessionId} from ${sessionFile}`)
+  restoreTrainingSession(sessionId) {
+    const sessionFile = join(this.dataDir, 'sessions', 'training', sessionId, 'session.json')
+    log.info(`Restoring training session ${sessionId} from ${sessionFile}`)
     let sessionJson
     try {
       sessionJson = JSON.parse(readFileSync(sessionFile))
@@ -53,22 +65,21 @@ module.exports = class EngineManager {
 
       // Make sure engine is registered
       const {engineName, engineVersion} = sessionJson.config
-      const engineClass = this.getEngine(engineName, engineVersion)
-      if (!engineClass)
-        throw new Error(`No such engine "${engineName}_${engineVersion}". Available: ${this.listEngines().map(t => t.join(' '))}`)
+      const {trainer} = this.getEngine(engineName, engineVersion)
+      if (!trainer)
+        throw new Error(`No such trainer "${engineName} ${engineVersion}". Available: ${this.listEngines().map(t => t.join(' '))}`)
 
       // Validate the engine is happy about the config
-      engineClass.validateSessionConfig(sessionJson.config)
-
+      trainer.validateSessionConfig(sessionJson.config)
 
       // Mark as stoppped unless STOPPED or ERROR (these aren't running processes!)
       if (sessionJson.state !== STOPPED && sessionJson.state !== ERROR) {
         sessionJson.state = STOPPED
       }
-      const instance = new engineClass(sessionId, new Session(sessionJson))
+      const trainingInstance = new trainer(sessionId, new Session(sessionJson))
 
-      this.addInstance(instance)
-      return instance
+      this.addTrainingInstance(trainingInstance)
+      return trainingInstance
 
     } catch (err) {
       log.error(`Failed to restore Session ${sessionFile}: ${err}`)
@@ -77,29 +88,29 @@ module.exports = class EngineManager {
   }
 
   /**
-   * ### startSession
+   * ### createTrainingSession
    *
    * - `@param sessionConfig` Training description conforming to training-session json-schema
    *
    */
-  createSession(sessionConfig) {
+  createTrainingSession(sessionConfig) {
 
     // Validate general schema correctness and add default values
     getSchema('training')(sessionConfig)
 
     // Make sure engine is registered
     const {engineName, engineVersion} = sessionConfig
-    const engineClass = this.getEngine(engineName, engineVersion)
-    if (!engineClass)
+    const {trainer} = this.getEngine(engineName, engineVersion)
+    if (!trainer)
       throw new Error(`No such engine "${engineName}_${engineVersion}". Available: ${this.listEngines().map(t => t.join(' '))}`)
 
     // Validate the engine is happy about the config
-    engineClass.validateSessionConfig(sessionConfig)
+    trainer.validateSessionConfig(sessionConfig)
 
     // create working directory
     // TODO less hacky the files to session.cwd
     const sessionId = `${engineName}-${Date.now()}`
-    const cwd = join(this.dataDir, 'sessions', sessionId)
+    const cwd = join(this.dataDir, 'sessions', 'training', sessionId)
     mkdirp.sync(cwd)
     sessionConfig.cwd = cwd
 
@@ -107,13 +118,13 @@ module.exports = class EngineManager {
     sessionConfig.groundTruthBag = sessionConfig.groundTruthBag.replace(this.baseUrl + '/', this.dataDir)
     log.warn(sessionConfig)
 
-    // Create a new engine instance
-    const instance = new engineClass(sessionId, sessionConfig)
-    this.addInstance(instance)
+    // Create a new engine trainingInstance
+    const trainingInstance = new trainer(sessionId, sessionConfig)
+    this.addTrainingInstance(trainingInstance)
 
     // Attach error handler
-    instance.on('ERROR', (exitCode, error) => {
-      Object.assign(instance.session, {
+    trainingInstance.on('ERROR', (exitCode, error) => {
+      Object.assign(trainingInstance.session, {
         exitCode,
         error
       })
@@ -121,22 +132,22 @@ module.exports = class EngineManager {
 
     // TODO other event handlers
 
-    return instance
+    return trainingInstance
   }
 
-  listInstances() {
+  listTrainingInstances() {
     return [...this._queue]
   }
 
-  getInstanceById(idOrSession) {
+  getTrainingInstanceById(idOrSession) {
     if (typeof idOrSession !== 'string') {
       idOrSession = idOrSession.id
     }
-    return this._queue.find(instance => instance.id === idOrSession)
+    return this._queue.find(trainingInstance => trainingInstance.id === idOrSession)
   }
 
-  addInstance(instance) {
-    this._queue.push(instance)
+  addTrainingInstance(trainingInstance) {
+    this._queue.push(trainingInstance)
   }
 
 }
