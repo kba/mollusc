@@ -13,6 +13,7 @@ module.exports = class EngineManager {
   constructor({baseUrl, dataDir}={}) {
     this._engines = []
     this._trainingQueue = []
+    this._recognitionQueue = []
     this.dataDir = dataDir
     this.baseUrl = baseUrl
   }
@@ -51,8 +52,112 @@ module.exports = class EngineManager {
       if (err) return
       sessionIds.forEach(sessionId => this.restoreTrainingSession(sessionId))
     })
+    readdir(join(this.dataDir, 'sessions', 'recognition'), (err, sessionIds) => {
+      if (err) return
+      sessionIds.forEach(sessionId => this.restoreRecognitionSession(sessionId))
+    })
   }
 
+//{{{ Recognition
+  restoreRecognitionSession(sessionId) {
+    const sessionFile = join(this.dataDir, 'sessions', 'recognition', sessionId, 'session.json')
+    log.info(`Restoring recognition session ${sessionId} from ${sessionFile}`)
+    let sessionJson
+    try {
+      sessionJson = JSON.parse(readFileSync(sessionFile))
+
+      // Validate general schema correctness and add default values
+      getSchema('recognition')(sessionJson.config)
+
+      // Make sure engine is registered
+      const {engineName, engineVersion} = sessionJson.config
+      const {recognizer} = this.getEngine(engineName, engineVersion)
+      if (!recognizer)
+        throw new Error(`No such recognizer "${engineName} ${engineVersion}". Available: ${this.listEngines().map(t => t.join(' '))}`)
+
+      // Validate the engine is happy about the config
+      recognizer.validateSessionConfig(sessionJson.config)
+
+      // Mark as stoppped unless STOPPED or ERROR (these aren't running processes!)
+      if (sessionJson.state !== STOPPED && sessionJson.state !== ERROR) {
+        sessionJson.state = STOPPED
+      }
+      const recognitionInstance = new recognizer(sessionId, new Session(sessionJson))
+
+      this.addRecognitionInstance(recognitionInstance)
+      return recognitionInstance
+
+    } catch (err) {
+      log.error(`Failed to restore Session ${sessionFile}: ${err}`)
+      console.log(err)
+    }
+  }
+
+  /**
+   * ### createRecognitionSession
+   *
+   * - `@param sessionConfig` Recognition description conforming to recognition-session json-schema
+   *
+   */
+  createRecognitionSession(sessionConfig) {
+
+    // Validate general schema correctness and add default values
+    getSchema('model-evaluation')(sessionConfig)
+
+    // Make sure engine is registered
+    const {engineName, engineVersion} = sessionConfig
+    const {recognizer} = this.getEngine(engineName, engineVersion)
+    if (!recognizer)
+      throw new Error(`No such engine "${engineName}_${engineVersion}". Available: ${this.listEngines().map(t => t.join(' '))}`)
+
+    // Validate the engine is happy about the config
+    recognizer.validateSessionConfig(sessionConfig)
+
+    // create working directory
+    // TODO less hacky the files to session.cwd
+    const sessionId = `${engineName}-${Date.now()}`
+    const cwd = join(this.dataDir, 'sessions', 'evaluation', sessionId)
+    mkdirp.sync(cwd)
+    sessionConfig.cwd = cwd
+
+    // Replace baseUrl with dataDir in groundTruthBag
+    sessionConfig.groundTruthBag = sessionConfig.groundTruthBag.replace(this.baseUrl + '/', this.dataDir)
+    log.warn(sessionConfig)
+
+    // Create a new engine recognitionInstance
+    const recognitionInstance = new recognizer(sessionId, sessionConfig)
+    this.addRecognitionInstance(recognitionInstance)
+
+    // Attach error handler
+    recognitionInstance.on('ERROR', (exitCode, error) => {
+      Object.assign(recognitionInstance.session, {
+        exitCode,
+        error
+      })
+    })
+
+    // TODO other event handlers
+
+    return recognitionInstance
+  }
+
+  listRecognitionInstances() {
+    return [...this._queue]
+  }
+
+  getRecognitionInstanceById(idOrSession) {
+    if (typeof idOrSession !== 'string') {
+      idOrSession = idOrSession.id
+    }
+    return this._queue.find(recognitionInstance => recognitionInstance.id === idOrSession)
+  }
+
+  addRecognitionInstance(recognitionInstance) {
+    this._queue.push(recognitionInstance)
+  }
+//}}}
+
+//{{{ Training
   restoreTrainingSession(sessionId) {
     const sessionFile = join(this.dataDir, 'sessions', 'training', sessionId, 'session.json')
     log.info(`Restoring training session ${sessionId} from ${sessionFile}`)
@@ -149,5 +254,6 @@ module.exports = class EngineManager {
   addTrainingInstance(trainingInstance) {
     this._trainingQueue.push(trainingInstance)
   }
+//}}}
 
 }

@@ -30,6 +30,69 @@ class KrakenRecognizer extends BaseEngine {
       return __version
     }
   }
+
+  // async recognize(model, ...images) {
+  //   if (model.startsWith('http://') || model.startsWith('https://')) {
+  //     const
+  //   }
+  //   const
+  //   spawnSync('kraken', [
+  //     '--verbose',
+  //     '-i', pathToImg, '/dev/stdout',
+  //     'ocr',
+  //     '-s',
+  //     '-m', model
+  //   ], {encoding: 'utf8'})
+  //   let text = ''
+  //   return text
+  // }
+
+  _parseLine(line) {
+    let ret = line
+    // if (line.match(/Accuracy report/)) {
+    //   line.replace(/\((\d+)\) (\d+\.\d+) (\d+) (\d+)/, (_, iteration, accuracy, chars, error) => {
+    //     ret = ['addIteration', {
+    //       iteration: parseInt(iteration),
+    //       accuracy: parseFloat(accuracy),
+    //       chars: parseInt(chars),
+    //       error: parseInt(error)
+    //     }]
+    //   })
+    // } else if (line.match("Saving to ")) {
+    //   line.replace(/Saving to ([^\s]+)/, (_, checkpointBasename) => {
+    //     ret = ['addCheckpoint', {
+    //       path: join(this.session.config.cwd, `${checkpointBasename}.mlmodel`),
+    //       mediaType: 'application/vnd.ocrd.coreml',
+    //     }]
+    //   })
+    // }
+    return ret
+  }
+
+  _setCmdLine() {
+
+    const {session} = this
+
+    const cmdLine = []
+    // verbose
+    cmdLine.push('-vv')
+    // subcommand
+    cmdLine.push('train')
+    // Report frequently
+    cmdLine.push('--report', 0.2)
+    // Save every 0.2 epochs
+    cmdLine.push('--savefreq', 0.2)
+    // custom arguments
+    cmdLine.push(...this.session.config.engineArguments)
+    // File arguments
+    // TODO respect manifest conventions
+    const toGlob = join(this.gtDir, 'data', 'ground-truth', `${session.config.groundTruthGlob}.tif`)
+    log.debug({toGlob})
+    cmdLine.push(...glob.sync(toGlob))
+
+    session.cmdLine = ['kraken', cmdLine]
+  }
+
 }
 
 /**

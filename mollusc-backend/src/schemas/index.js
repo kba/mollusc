@@ -2,7 +2,8 @@ const Ajv = new require('ajv')({
   allErrors: true,
   useDefaults: true,
   schemas: {
-    'training': require('./training-schema.json')
+    'training': require('./training-schema.json'),
+    'model-evaluation': require('./model-evaluation-schema.json'),
   },
 })
 
