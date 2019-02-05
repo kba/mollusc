@@ -1,14 +1,15 @@
 const {NEW} = require('./session/states')
 /**
- * Represents a running training session
+ * Represents a running training/recognition session
  */
-module.exports = class TrainingSession {
+module.exports = class Session {
 
   constructor(id, config) {
     if (typeof id === 'string') {
       this.id = id
       this.config = config
       this.state = NEW
+      this.progress = 0
       this.checkpoints = []
       this.iterations = []
       this.log = []
