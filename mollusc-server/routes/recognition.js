@@ -29,30 +29,6 @@ module.exports = function recognitionRoute(server) {
     return sendSession(req, resp)
   })
 
-  app.get('/:id/checkpoint', sessionMiddleware, (req, resp) => {
-    const {checkpoints} = req.session
-    resp.set('Content-Type', 'application/json')
-    const urls = checkpoints.map(([dt, {path}], idx) => {
-      return `${baseUrl}/recognition/${req.session.id}/checkpoint/${idx}`
-    })
-    resp.send(urls)
-  })
-
-  app.get('/:id/checkpoint/:idx', sessionMiddleware, (req, resp) => {
-    const checkpoint = req.session.checkpoints[req.params.idx]
-    if (!checkpoint) {
-      return resp.status(404).send("Checkpoint not found")
-    }
-    const [dt, {mediaType, path}] = checkpoint
-    resp.set('Content-Type', mediaType)
-    resp.set('Date', dt)
-    stat(path, (err, {size}) => {
-      resp.set('Content-Length', size)
-      const instream = createReadStream(path)
-      instream.pipe(resp)
-    })
-  })
-
   app.post('/:id/save', sessionMiddleware, (req, resp, next) => {
     const {instance} = req
     instance._saveSession()

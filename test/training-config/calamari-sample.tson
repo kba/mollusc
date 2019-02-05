@@ -1,5 +1,5 @@
 engineName "calamari"
 engineVersion "0.2.3"
 groundTruthBag "http://localhost:3434/gt/a5a04b1a5c8c727fa37111ae46154cc4.zip"
-groundTruthGlob "*"
+trainingGlob "*"
 outputModelFormat "application/vnd.ocrd.tf+zip"

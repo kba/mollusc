@@ -17,6 +17,7 @@ module.exports = class KrakenEngine {
 /**
  * Recognize with kraken
  */
+//{{{ KrakenRecognizer
 class KrakenRecognizer extends BaseEngine {
 
   static get name() {return 'kraken'}
@@ -77,16 +78,16 @@ class KrakenRecognizer extends BaseEngine {
     // verbose
     cmdLine.push('-vv')
     // subcommand
-    cmdLine.push('train')
-    // Report frequently
-    cmdLine.push('--report', 0.2)
-    // Save every 0.2 epochs
-    cmdLine.push('--savefreq', 0.2)
+    cmdLine.push('ocr')
+    // Treat images as single lines
+    cmdLine.push('--no-segmentation')
+    // Create text
+    cmdLine.push('--text')
     // custom arguments
-    cmdLine.push(...this.session.config.engineArguments)
+    cmdLine.push(...this.session.config.trainerArgs)
     // File arguments
     // TODO respect manifest conventions
-    const toGlob = join(this.gtDir, 'data', 'ground-truth', `${session.config.groundTruthGlob}.tif`)
+    // const toGlob = join(this.gtDir, 'data', 'ground-truth', `${session.config.evaluationGlob}.tif`)
     log.debug({toGlob})
     cmdLine.push(...glob.sync(toGlob))
 
@@ -94,10 +95,12 @@ class KrakenRecognizer extends BaseEngine {
   }
 
 }
+//}}}
 
 /**
  * Train with ketos
  */
+//{{{ KrakenTrainer
 class KrakenTrainer extends BaseEngine {
 
   static get version() {
@@ -154,10 +157,10 @@ class KrakenTrainer extends BaseEngine {
     // Save every 0.2 epochs
     cmdLine.push('--savefreq', 0.2)
     // custom arguments
-    cmdLine.push(...this.session.config.engineArguments)
+    cmdLine.push(...this.session.config.trainerArgs)
     // File arguments
     // TODO respect manifest conventions
-    const toGlob = join(this.gtDir, 'data', 'ground-truth', `${session.config.groundTruthGlob}.tif`)
+    const toGlob = join(this.gtDir, 'data', 'ground-truth', `${session.config.trainingGlob}.tif`)
     log.debug({toGlob})
     cmdLine.push(...glob.sync(toGlob))
 
@@ -165,3 +168,4 @@ class KrakenTrainer extends BaseEngine {
   }
 
 }
+//}}}

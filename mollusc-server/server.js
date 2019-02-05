@@ -71,6 +71,9 @@ module.exports = class MolluscServer {
     log.info("Setting up /training")
     app.use('/training', require('./routes/training')(this))
 
+    log.info("Setting up /recognition")
+    app.use('/recognition', require('./routes/recognition')(this))
+
     log.info("Setting up /gt")
     app.use('/gt', require('./routes/gt')(this))
 

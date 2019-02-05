@@ -18,6 +18,7 @@ module.exports = class EngineManager {
     this.baseUrl = baseUrl
   }
 
+//{{{ engines
   registerEngine(engineClass) {
     // check for version to make sure there is one and not an exception
     const {name, version} = engineClass
@@ -46,6 +47,8 @@ module.exports = class EngineManager {
   listEngines() {
     return this._engines.map(engine => {return [engine.name, engine.version]})
   }
+
+//}}}
 
   restoreAllSessions() {
     readdir(join(this.dataDir, 'sessions', 'training'), (err, sessionIds) => {
