@@ -86,10 +86,16 @@ class KrakenRecognizer extends BaseEngine {
     // custom arguments
     cmdLine.push(...this.session.config.trainerArgs)
     // File arguments
-    // TODO respect manifest conventions
-    // const toGlob = join(this.gtDir, 'data', 'ground-truth', `${session.config.evaluationGlob}.tif`)
-    log.debug({toGlob})
-    cmdLine.push(...glob.sync(toGlob))
+    // TODO respect manifest conventions, hardcoded!
+    const imgExtension = '.tif'
+    const toGlob = join(this.gtDir, 'data', 'ground-truth', `${session.config.evaluationGlob}${imgExtension}`)
+    let files = []
+    glob.sync(toGlob).forEach(img => {
+      files.push(img)
+      files.push(img.replace(imgExtension, '.txt'))
+    })
+    log.debug({files})
+    cmdLine.push(...files)
 
     session.cmdLine = ['kraken', cmdLine]
   }
